@@ -1,0 +1,50 @@
+.carGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.carLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.carCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.carCard:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.imageWrapper {
+  position: relative;
+  padding-top: 66.67%; /* 3:2 aspect ratio */
+}
+
+.carInfo {
+  padding: 1rem;
+}
+
+.carTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.carYear {
+  color: #718096;
+  margin-bottom: 0.5rem;
+}
+
+.carPrice {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4a5568;
+}
+
