@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -9,40 +9,50 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
+import { fetchPromotions } from "@/src/utils/api"
 
 interface Promotion {
   id: number
   title: string
   description: string
-  startDate: string
-  endDate: string
-  image: string
+  started_at: string
+  finished_at: string
+  image: string | null
 }
 
-const initialPromotions: Promotion[] = [
-  {
-    id: 1,
-    title: "Летняя распродажа",
-    description: "Скидки до 15% на все модели",
-    startDate: "2023-06-01",
-    endDate: "2023-08-31",
-    image: "/placeholder.svg",
-  },
-  {
-    id: 2,
-    title: "Кредит 0%",
-    description: "Первый взнос от 10%, срок до 3 лет",
-    startDate: "2023-07-01",
-    endDate: "2023-09-30",
-    image: "/placeholder.svg",
-  },
-]
-
 export default function PromotionsManagement() {
-  const [promotions, setPromotions] = useState<Promotion[]>(initialPromotions)
+  const [promotions, setPromotions] = useState<Promotion[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [currentPromotion, setCurrentPromotion] = useState<Promotion | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  useEffect(() => {
+    async function loadPromotions() {
+      try {
+        const data = await fetchPromotions()
+
+        // Преобразуем ответ API в формат нужный фронту
+        const mappedPromotions = data.promotions.map((promotion: any) => ({
+          id: promotion.id,
+          title: promotion.title,
+          description: promotion.description,
+          started_at: promotion.started_at,
+          finished_at: promotion.finished_at,
+        }))
+
+        setPromotions(mappedPromotions)
+      } catch (err: any) {
+        console.error(err)
+        setError(err.message || "Ошибка загрузки данных")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  
+    loadPromotions()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -131,27 +141,27 @@ export default function PromotionsManagement() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="startDate" className="text-right">
+                <Label htmlFor="started_at" className="text-right">
                   Дата начала
                 </Label>
                 <Input
-                  id="startDate"
-                  name="startDate"
+                  id="started_at"
+                  name="started_at"
                   type="date"
-                  value={currentPromotion?.startDate || ""}
+                  value={currentPromotion?.started_at || ""}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="endDate" className="text-right">
+                <Label htmlFor="finished_at" className="text-right">
                   Дата окончания
                 </Label>
                 <Input
-                  id="endDate"
-                  name="endDate"
+                  id="finished_at"
+                  name="finished_at"
                   type="date"
-                  value={currentPromotion?.endDate || ""}
+                  value={currentPromotion?.finished_at || ""}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -194,8 +204,8 @@ export default function PromotionsManagement() {
             <TableRow key={promo.id}>
               <TableCell>{promo.title}</TableCell>
               <TableCell>{promo.description}</TableCell>
-              <TableCell>{promo.startDate}</TableCell>
-              <TableCell>{promo.endDate}</TableCell>
+              <TableCell>{promo.started_at}</TableCell>
+              <TableCell>{promo.finished_at}</TableCell>
               <TableCell>
                 <Button variant="ghost" size="icon" onClick={() => handleEditPromotion(promo)}>
                   <Pencil className="h-4 w-4" />
@@ -211,4 +221,3 @@ export default function PromotionsManagement() {
     </div>
   )
 }
-

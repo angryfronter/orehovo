@@ -13,5 +13,7 @@ Rails.application.routes.draw do
   # root "posts#index"
   namespace :api do
     resources :cars, only: [:index, :show, :create, :destroy, :update]
+
+    resources :promotions, only: [:index, :show, :create, :destroy, :update]
   end
 end

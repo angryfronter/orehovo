@@ -58,3 +58,10 @@ car.car_colors.create!([
   { name: "Черный", hex: "#000000" },
   { name: "Красный", hex: "#FF0000" }
 ])
+
+Promotion.create!(
+  title: "Летняя распродажа",
+  description: "Скидки до 15% на все модели",
+  started_at: "2023-06-01",
+  finished_at: "2023-08-31"
+)

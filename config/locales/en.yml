@@ -29,3 +29,6 @@
 
 en:
   hello: "Hello world"
+  time:
+    formats:
+      time_stamp: ! '%Y-%m-%d'

@@ -2,8 +2,8 @@ import type { Car, Promotion, CreditProgram } from "@/types"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.example.com"
 
-export async function fetchPromotions(): Promise<Promotion[]> {
-  const response = await fetch(`${API_URL}/promotions`)
+export async function fetchPromotions(): Promise<{ promotions: any[] }> {
+  const response = await fetch(`${API_URL}/api/promotions`)
   if (!response.ok) {
     throw new Error("Failed to fetch promotions")
   }
