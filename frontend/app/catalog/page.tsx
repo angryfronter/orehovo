@@ -11,6 +11,7 @@ import CatalogFilters from "@/components/catalog-filters"
 import Promotions from "@/components/promotions"
 import AssistanceForm from "@/components/assistance-form"
 import Loading from "@/components/loading"
+import { fetchCars } from "@/src/utils/api"
 
 interface Model {
   brand: string
@@ -31,7 +32,7 @@ export default function CatalogPage() {
   const [groupedModels, setGroupedModels] = useState<GroupedModels>({})
   const [loading, setLoading] = useState(false)
   const [filters, setFilters] = useState({
-    bodyType: "all",
+    body_type: "all",
     gearbox: "all",
     drive: "all",
     minPrice: "",
@@ -42,11 +43,13 @@ export default function CatalogPage() {
     const fetchModels = async () => {
       setLoading(true)
       try {
-        const filtered = cars.filter((car) => {
+        const { cars } = await fetchCars()
+
+        const filtered = cars.filter((car: Car) => {
           if (selectedBrand && car.brand.toLowerCase() !== selectedBrand.toLowerCase()) {
             return false
           }
-          if (filters.bodyType !== "all" && car.bodyType.toLowerCase() !== filters.bodyType.toLowerCase()) {
+          if (filters.body_type !== "all" && car.bodyType.toLowerCase() !== filters.body_type.toLowerCase()) {
             return false
           }
           if (filters.gearbox !== "all" && car.transmission.toLowerCase() !== filters.gearbox.toLowerCase()) {
@@ -93,7 +96,7 @@ export default function CatalogPage() {
   const handleSelectBrand = (brandId: string | null) => {
     setSelectedBrand(brandId)
     setFilters({
-      bodyType: "all",
+      body_type: "all",
       gearbox: "all",
       drive: "all",
       minPrice: "",

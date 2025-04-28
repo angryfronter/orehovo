@@ -42,3 +42,19 @@ export async function deleteCar(id: number): Promise<void> {
     throw new Error("Failed to delete car")
   }
 }
+
+export async function updateCar(id: number, car: Car): Promise<Car> {
+  const response = await fetch(`${API_URL}/api/cars/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(car),
+  })
+  
+  if (!response.ok) {
+    throw new Error("Failed to update car")
+  }
+
+  return response.json()
+}

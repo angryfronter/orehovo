@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { fetchCars, deleteCar } from "@/src/utils/api"
+import { fetchCars, deleteCar, updateCar } from "@/src/utils/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -33,8 +33,8 @@ interface Car {
   engine: string
   transmission: string
   drivetrain: string
-  fuelType: string
-  bodyType: string
+  fuel_type: string
+  body_type: string
   description: string
   colors: CarColor[]
   configurations: CarConfiguration[]
@@ -65,8 +65,8 @@ export default function CarsManagement() {
           engine: car.car_engines.length > 0 ? `${car.car_engines[0].displacement / 1000}L` : "",
           transmission: car.transmission,
           drivetrain: car.drivetrain,
-          fuelType: car.fuel_type,
-          bodyType: car.body_type,
+          fuel_type: car.fuel_type,
+          body_type: car.body_type,
           description: "", // Бэкенд пока description не возвращает
           colors: car.car_colors.map((color: any) => ({
             name: color.name,
@@ -132,18 +132,26 @@ export default function CarsManagement() {
     }
   }
 
-  const handleAddCar = () => {
+  const handleAddCar = async () => {
     if (currentCar) {
-      if (isEditing) {
-        setCars(cars.map((car) => (car.id === currentCar.id ? currentCar : car)))
-      } else {
-        setCars([...cars, { ...currentCar, id: Date.now() }])
+      try {
+        if (isEditing) {
+          // Update existing car
+          await updateCar(currentCar.id, currentCar)
+          setCars(cars.map((car) => (car.id === currentCar.id ? currentCar : car)))
+        } else {
+          // Add new car
+          setCars([...cars, { ...currentCar, id: Date.now() }])
+        }
+        setIsDialogOpen(false)
+        setCurrentCar(null)
+        setIsEditing(false)
+        console.log("Отправка данных на сервер:", currentCar);
+      } catch (err: any) {
+        setError(err.message || "Ошибка при сохранении автомобиля")
       }
-      setIsDialogOpen(false)
-      setCurrentCar(null)
-      setIsEditing(false)
     }
-  }
+  }  
 
   const handleEditCar = (car: Car) => {
     setCurrentCar(car)
@@ -268,19 +276,19 @@ export default function CarsManagement() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="fuelType">Тип топлива</Label>
+                    <Label htmlFor="fuel_type">Тип топлива</Label>
                     <Input
-                      id="fuelType"
-                      value={currentCar?.fuelType || ""}
-                      onChange={(e) => handleInputChange(e, "fuelType")}
+                      id="fuel_type"
+                      value={currentCar?.fuel_type || ""}
+                      onChange={(e) => handleInputChange(e, "fuel_type")}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="bodyType">Тип кузова</Label>
+                    <Label htmlFor="body_type">Тип кузова</Label>
                     <Input
-                      id="bodyType"
-                      value={currentCar?.bodyType || ""}
-                      onChange={(e) => handleInputChange(e, "bodyType")}
+                      id="body_type"
+                      value={currentCar?.body_type || ""}
+                      onChange={(e) => handleInputChange(e, "body_type")}
                     />
                   </div>
                 </div>

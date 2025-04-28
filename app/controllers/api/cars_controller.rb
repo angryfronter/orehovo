@@ -12,7 +12,7 @@ class Api::CarsController < ApplicationController
   end
 
   def create
-    result = Cars::Operations::Create.call(params: create_params)
+    result = Cars::Operations::Create.call(params: car_params)
 
     status, presenter = result.success? ? [:ok, 'main'] : [:unprocessable_content, 'data_errors']
 
@@ -25,6 +25,15 @@ class Api::CarsController < ApplicationController
     render json: json_presented(@car, 'car', 'data_errors'), status: :ok
   end
 
+  def update
+    car = Car.find(params[:id])
+    if car.update(car_params)
+      render json: { car: car }, status: :ok
+    else
+      render json: { error: "Failed to update car" }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_car
@@ -33,10 +42,10 @@ class Api::CarsController < ApplicationController
     return render_not_found_error unless @car
   end
 
-  def create_params
+  def car_params
     params.require(:car).permit(
-      :brand, :model, :price, :year, :transmission, :drivetrain, :fuel_type, :fuel_tank, :body_type, :color,
-      car_colors: %i[name hex], car_configurations: %i[name price features], car_engines: %i[type power torque displacement],
+      :id, :brand, :model, :price, :year, :transmission, :drivetrain, :fuel_type, :fuel_tank, :body_type, :color,
+      car_colors: %i[name hex], car_configurations: %i[name price features], car_engines: %i[engine_type power torque displacement],
       car_features: %i[category description]
     )
   end

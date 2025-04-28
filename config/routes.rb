@@ -12,6 +12,6 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   namespace :api do
-    resources :cars, only: [:index, :show, :create, :destroy]
+    resources :cars, only: [:index, :show, :create, :destroy, :update]
   end
 end
