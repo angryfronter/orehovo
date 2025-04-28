@@ -18,7 +18,7 @@ export async function fetchCreditPrograms(): Promise<CreditProgram[]> {
   return response.json()
 }
 
-export async function fetchCars(): Promise<Car[]> {
+export async function fetchCars(): Promise<{ cars: any[] }> {
   const response = await fetch(`${API_URL}/api/cars`)
   if (!response.ok) {
     throw new Error("Failed to fetch cars")

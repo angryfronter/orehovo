@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { fetchCars } from "@/src/utils/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -41,42 +42,67 @@ interface Car {
   gallery: string[]
 }
 
-const initialCars: Car[] = [
-  {
-    id: 1,
-    brand: "BAIC",
-    model: "U5 PLUS",
-    year: 2023,
-    price: 1670000,
-    engine: "1.5L",
-    transmission: "CVT",
-    drivetrain: "FWD",
-    fuelType: "Gasoline",
-    bodyType: "Sedan",
-    description: "Комфортный седан с современным оснащением",
-    colors: [
-      { name: "Белый", hex: "#FFFFFF", images: ["/placeholder.svg"] },
-      { name: "Черный", hex: "#000000", images: ["/placeholder.svg"] },
-    ],
-    configurations: [
-      { name: "Базовая", price: 1670000, features: ["Климат-контроль", "ABS", "ESP"] },
-      { name: "Люкс", price: 1870000, features: ["Кожаный салон", "Панорамная крыша", "Камера 360°"] },
-    ],
-    specifications: {
-      Длина: "4660 мм",
-      Ширина: "1820 мм",
-      Высота: "1480 мм",
-      "Колесная база": "2670 мм",
-    },
-    gallery: ["/placeholder.svg", "/placeholder.svg"],
-  },
-]
-
 export default function CarsManagement() {
-  const [cars, setCars] = useState<Car[]>(initialCars)
+  const [cars, setCars] = useState<Car[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [currentCar, setCurrentCar] = useState<Car | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  useEffect(() => {
+    async function loadCars() {
+      try {
+        const data = await fetchCars()
+
+        // Преобразуем ответ API в формат нужный фронту
+        const mappedCars = data.cars.map((car: any) => ({
+          id: car.id,
+          brand: car.brand,
+          model: car.model,
+          year: car.year,
+          price: car.price,
+          engine: car.car_engines.length > 0 ? `${car.car_engines[0].displacement / 1000}L` : "",
+          transmission: car.transmission,
+          drivetrain: car.drivetrain,
+          fuelType: car.fuel_type,
+          bodyType: car.body_type,
+          description: "", // Бэкенд пока description не возвращает
+          colors: car.car_colors.map((color: any) => ({
+            name: color.name,
+            hex: color.hex,
+            images: [], // Пока у цветов нет картинок
+          })),
+          configurations: car.car_configurations.map((config: any) => ({
+            name: config.name,
+            price: config.price,
+            features: config.features,
+          })),
+          specifications: {
+            // Тут можно подставить пустые данные или если появится на бэке — дописать
+          },
+          gallery: car.images.length ? car.images : [car.image], // Используем main image если нет галереи
+        }))
+
+        setCars(mappedCars)
+      } catch (err: any) {
+        console.error(err)
+        setError(err.message || "Ошибка загрузки данных")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadCars()
+  }, [])
+
+  if (isLoading) {
+    return <div>Загрузка автомобилей...</div>
+  }
+
+  if (error) {
+    return <div>Ошибка: {error}</div>
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Car) => {
     if (currentCar) {
