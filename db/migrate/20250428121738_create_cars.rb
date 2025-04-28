@@ -11,6 +11,7 @@ class CreateCars < ActiveRecord::Migration[8.0]
       t.integer :fuel_tank
       t.string :body_type
       t.string :color
+      t.integer :discount
 
       t.timestamps
     end

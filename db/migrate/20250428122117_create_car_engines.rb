@@ -2,7 +2,7 @@ class CreateCarEngines < ActiveRecord::Migration[8.0]
   def change
     create_table :car_engines do |t|
       t.references :car, foreign_key: true
-      t.string :type
+      t.string :engine_type
       t.integer :power
       t.integer :torque
       t.integer :displacement
