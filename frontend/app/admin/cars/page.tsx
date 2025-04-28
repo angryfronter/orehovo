@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { fetchCars } from "@/src/utils/api"
+import { fetchCars, deleteCar } from "@/src/utils/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -151,9 +151,14 @@ export default function CarsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteCar = (id: number) => {
-    setCars(cars.filter((car) => car.id !== id))
-  }
+  const handleDeleteCar = async (id: number) => {
+    try {
+      await deleteCar(id)
+      setCars(cars.filter((car) => car.id !== id))
+    } catch (err: any) {
+      setError(err.message || "Ошибка при удалении автомобиля")
+    }
+  }  
 
   const handleAddColor = () => {
     if (currentCar) {

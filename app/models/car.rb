@@ -2,10 +2,10 @@ class Car < ApplicationRecord
   has_one_attached :main_image, dependent: :purge
   has_many_attached :images, dependent: :purge
 
-  has_many :car_colors
-  has_many :car_engines
-  has_many :car_features
-  has_many :car_images
-  has_many :car_configurations
-  has_many :car_dimensions
+  has_many :car_colors, dependent: :destroy
+  has_many :car_engines, dependent: :destroy
+  has_many :car_features, dependent: :destroy
+  has_many :car_images, dependent: :destroy
+  has_many :car_configurations, dependent: :destroy
+  has_many :car_dimensions, dependent: :destroy
 end
