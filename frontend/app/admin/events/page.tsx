@@ -11,10 +11,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { fetchEvents, createEvent, updateEvent, deleteEvent } from "@/src/utils/api"
 
 interface Event {
-  id: string
+  id: number
   name: string
   description: string
-  date: Date
+  date: string
   location: string
   event_type: "test-drive" | "presentation" | "sale"
 }
@@ -37,7 +37,7 @@ export default function EventsManagement() {
           id: event.id,
           name: event.name,
           description: event.description,
-          date: new Date(event.date),
+          date: event.date,
           location: event.location,
           event_type: event.event_type,
         }))
@@ -65,16 +65,24 @@ export default function EventsManagement() {
     }
   }
 
-  const handleAddEvent = () => {
-    if (currentEvent) {
-      if (isEditing) {
-        setEvents(events.map((event) => (event.id === currentEvent.id ? currentEvent : event)))
+  const handleAddEvent = async () => {
+    if (!currentEvent) return
+  
+    try {
+      if (isEditing && currentEvent.id) {
+        const updated = await updateEvent(currentEvent.id, currentEvent)
+        setEvents(events.map(e => e.id === updated.id ? updated : e))
       } else {
-        setEvents([...events, { ...currentEvent, id: Date.now().toString() }])
+        const created = await createEvent(currentEvent)
+        setEvents([...events, created])
       }
+  
       setIsDialogOpen(false)
       setCurrentEvent(null)
       setIsEditing(false)
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при сохранении события")
     }
   }
 
@@ -84,8 +92,14 @@ export default function EventsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents(events.filter((event) => event.id !== id))
+  const handleDeleteEvent = async (id: number) => {
+    try {
+      await deleteEvent(id)
+      setEvents(events.filter(event => event.id !== id))
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при удалении события")
+    }
   }
 
   return (
@@ -96,7 +110,14 @@ export default function EventsManagement() {
           <DialogTrigger asChild>
             <Button
               onClick={() => {
-                setCurrentEvent(null)
+                setCurrentEvent({
+                  id: 0,
+                  name: "",
+                  description: "",
+                  date: "",
+                  location: "",
+                  event_type: "test-drive",
+                })
                 setIsEditing(false)
               }}
             >
@@ -194,7 +215,7 @@ export default function EventsManagement() {
           {events.map((event) => (
             <TableRow key={event.id}>
               <TableCell>{event.name}</TableCell>
-              <TableCell>{event.date.toLocaleDateString()}</TableCell>
+              <TableCell>{event.date}</TableCell>
               <TableCell>{event.location}</TableCell>
               <TableCell>{event.event_type}</TableCell>
               <TableCell>

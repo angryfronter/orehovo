@@ -31,3 +31,11 @@ export interface CreditProgram {
   downPayment: number
 }
 
+export interface Sobitie {
+  id: number
+  name: string
+  description: string
+  date: string
+  location: string
+  event_type: "test-drive" | "presentation" | "sale"
+}
