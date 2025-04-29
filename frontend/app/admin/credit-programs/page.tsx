@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,63 +8,80 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { fetchCreditPrograms, createCreditProgram, updateCreditProgram, deleteCreditProgram } from "@/src/utils/api"
 
 interface CreditProgram {
-  id: string
+  id: number
   name: string
   description: string
-  interestRate: number
+  interest_rate: number
   term: number
-  downPayment: number
+  down_payment: number
 }
 
-const initialCreditPrograms: CreditProgram[] = [
-  {
-    id: "1",
-    name: "Стандартный кредит",
-    description: "Базовая программа кредитования",
-    interestRate: 9.9,
-    term: 60,
-    downPayment: 20,
-  },
-  {
-    id: "2",
-    name: "Первый автомобиль",
-    description: "Специальная программа для покупки первого автомобиля",
-    interestRate: 8.5,
-    term: 84,
-    downPayment: 10,
-  },
-]
-
 export default function CreditProgramsManagement() {
-  const [creditPrograms, setCreditPrograms] = useState<CreditProgram[]>(initialCreditPrograms)
+  const [creditPrograms, setCreditPrograms] = useState<CreditProgram[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [currentProgram, setCurrentProgram] = useState<CreditProgram | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  useEffect(() => {
+    async function loadCreditPrograms() {
+      try {
+        const data = await fetchCreditPrograms()
+
+        // Преобразуем ответ API в формат нужный фронту
+        const mappedCreditPrograms = data.credit_programs.map((program: any) => ({
+          id: program.id,
+          name: program.name,
+          description: program.description,
+          interest_rate: program.interest_rate,
+          term: program.term,
+          down_payment: program.down_payment,
+        }))
+
+        setCreditPrograms(mappedCreditPrograms)
+      } catch (err: any) {
+        console.error(err)
+        setError(err.message || "Ошибка загрузки данных")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  
+    loadCreditPrograms()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     if (currentProgram) {
       setCurrentProgram({
         ...currentProgram,
-        [name]: name === "interestRate" || name === "term" || name === "downPayment" ? Number(value) : value,
+        [name]: name === "interest_rate" || name === "term" || name === "down_payment" ? Number(value) : value,
       })
     }
   }
 
-  const handleAddProgram = () => {
-    if (currentProgram) {
-      if (isEditing) {
-        setCreditPrograms(
-          creditPrograms.map((program) => (program.id === currentProgram.id ? currentProgram : program)),
-        )
+  const handleAddProgram = async () => {
+    if (!currentProgram) return
+  
+    try {
+      if (isEditing && currentProgram.id) {
+        const updated = await updateCreditProgram(currentProgram.id, currentProgram)
+        setCreditPrograms(creditPrograms.map(p => p.id === updated.id ? updated : p))
       } else {
-        setCreditPrograms([...creditPrograms, { ...currentProgram, id: Date.now().toString() }])
+        const created = await createCreditProgram(currentProgram)
+        setCreditPrograms([...creditPrograms, created])
       }
+  
       setIsDialogOpen(false)
       setCurrentProgram(null)
       setIsEditing(false)
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при сохранении акции")
     }
   }
 
@@ -74,8 +91,14 @@ export default function CreditProgramsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteProgram = (id: string) => {
-    setCreditPrograms(creditPrograms.filter((program) => program.id !== id))
+  const handleDeleteProgram = async (id: number) => {
+    try {
+      await deleteCreditProgram(id)
+      setCreditPrograms(creditPrograms.filter(program => program.id !== id))
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при удалении программы")
+    }
   }
 
   return (
@@ -86,7 +109,14 @@ export default function CreditProgramsManagement() {
           <DialogTrigger asChild>
             <Button
               onClick={() => {
-                setCurrentProgram(null)
+                setCurrentProgram({
+                  id: 0,
+                  name: "",
+                  description: "",
+                  interest_rate: 0,
+                  term: 0,
+                  down_payment: 0,
+                })
                 setIsEditing(false)
               }}
             >
@@ -124,15 +154,15 @@ export default function CreditProgramsManagement() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="interestRate" className="text-right">
+                <Label htmlFor="interest_rate" className="text-right">
                   Процентная ставка
                 </Label>
                 <Input
-                  id="interestRate"
-                  name="interestRate"
+                  id="interest_rate"
+                  name="interest_rate"
                   type="number"
                   step="0.1"
-                  value={currentProgram?.interestRate || ""}
+                  value={currentProgram?.interest_rate || ""}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -151,14 +181,14 @@ export default function CreditProgramsManagement() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="downPayment" className="text-right">
+                <Label htmlFor="down_payment" className="text-right">
                   Первоначальный взнос (%)
                 </Label>
                 <Input
-                  id="downPayment"
-                  name="downPayment"
+                  id="down_payment"
+                  name="down_payment"
                   type="number"
-                  value={currentProgram?.downPayment || ""}
+                  value={currentProgram?.down_payment || ""}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -185,9 +215,9 @@ export default function CreditProgramsManagement() {
             <TableRow key={program.id}>
               <TableCell>{program.name}</TableCell>
               <TableCell>{program.description}</TableCell>
-              <TableCell>{program.interestRate}%</TableCell>
+              <TableCell>{program.interest_rate}%</TableCell>
               <TableCell>{program.term}</TableCell>
-              <TableCell>{program.downPayment}%</TableCell>
+              <TableCell>{program.down_payment}%</TableCell>
               <TableCell>
                 <Button variant="ghost" size="icon" onClick={() => handleEditProgram(program)}>
                   <Pencil className="h-4 w-4" />

@@ -15,5 +15,7 @@ Rails.application.routes.draw do
     resources :cars, only: [:index, :show, :create, :destroy, :update]
 
     resources :promotions, only: [:index, :show, :create, :destroy, :update]
+
+    resources :credit_programs, only: [:index, :show, :create, :destroy, :update]
   end
 end

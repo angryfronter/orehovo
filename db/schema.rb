@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_28_161641) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_29_104357) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -114,6 +114,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_28_161641) do
     t.string "body_type"
     t.string "color"
     t.integer "discount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "credit_programs", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.decimal "interest_rate", precision: 5, scale: 2
+    t.integer "term"
+    t.decimal "down_payment", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -1,0 +1,2 @@
+class CreditProgram < ApplicationRecord
+end

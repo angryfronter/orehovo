@@ -65,3 +65,11 @@ Promotion.create!(
   started_at: "2023-06-01",
   finished_at: "2023-08-31"
 )
+
+CreditProgram.create!(
+  name: "Стандартный кредит",
+  description: "Базовая программа кредитования",
+  interest_rate: 9.9,
+  term: 60,
+  down_payment: 20
+)

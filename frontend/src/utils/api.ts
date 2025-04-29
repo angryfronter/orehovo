@@ -44,13 +44,51 @@ export async function deletePromotion(id: number): Promise<void> {
   if (!response.ok) throw new Error("Failed to delete promotion")
 }
 
-export async function fetchCreditPrograms(): Promise<CreditProgram[]> {
-  const response = await fetch(`${API_URL}/credit-programs`)
+///////////////////////////////////////////////////////////////////
+
+export async function fetchCreditPrograms(): Promise<{ credit_programs: any[] }> {
+  const response = await fetch(`${API_URL}/api/credit_programs`)
   if (!response.ok) {
     throw new Error("Failed to fetch credit programs")
   }
   return response.json()
 }
+
+export async function createCreditProgram(credit_program: Omit<CreditProgram, "id">): Promise<CreditProgram> {
+  const response = await fetch(`${API_URL}/api/credit_programs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credit_program }),
+  })
+
+  if (!response.ok) throw new Error("Failed to create credit program")
+
+  const data = await response.json()
+  return data.credit_program
+}
+
+export async function updateCreditProgram(id: number, credit_program: CreditProgram): Promise<CreditProgram> {
+  const response = await fetch(`${API_URL}/api/credit_programs/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credit_program }),
+  })
+
+  if (!response.ok) throw new Error("Failed to update credit program")
+
+  const data = await response.json()
+  return data.credit_program
+}
+
+export async function deleteCreditProgram(id: number): Promise<void> {
+  const response = await fetch(`${API_URL}/api/credit_programs/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) throw new Error("Failed to delete credit program")
+}
+
+///////////////////////////////////////////////////////////////////
 
 export async function fetchCars(): Promise<{ cars: any[] }> {
   const response = await fetch(`${API_URL}/api/cars`)
