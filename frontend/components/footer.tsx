@@ -1,15 +1,23 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { SubscriptionForm } from "./subscription-form"
 import { ContactForm } from "./contact-form"
+import { fetchContact } from "@/src/utils/api"
 
 const Footer = () => {
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false)
   const [isContactOpen, setIsContactOpen] = useState(false)
+  const [contact, setContact] = useState<any | null>(null)
+
+  useEffect(() => {
+    fetchContact()
+      .then((data) => setContact(data.contact))
+      .catch((error) => console.error("Ошибка загрузки контактов:", error))
+  }, [])
 
   return (
     <footer className="bg-gray-100 py-8 md:py-12">
@@ -21,14 +29,22 @@ const Footer = () => {
               Официальный дилер. Продажа и обслуживание автомобилей в Москве.
             </p>
           </div>
+
           <div>
             <h3 className="text-lg font-semibold mb-4">Контакты</h3>
             <div className="space-y-2 text-sm">
-              <p>Телефон: +7 (495) 495-95-95</p>
-              <p>Адрес: г. Москва, Ореховый бульвар, 26</p>
-              <p>Email: info@dc-orehovo.ru</p>
+              {contact ? (
+                <>
+                  <p>Телефон: {contact.phone}</p>
+                  <p>Адрес: {contact.address}</p>
+                  <p>Email: {contact.email}</p>
+                </>
+              ) : (
+                <p>Загрузка контактов...</p>
+              )}
             </div>
           </div>
+
           <div>
             <h3 className="text-lg font-semibold mb-4">Навигация</h3>
             <ul className="space-y-2 text-sm">
@@ -54,6 +70,7 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
           <div>
             <h3 className="text-lg font-semibold mb-4">Мы в соцсетях</h3>
             <div className="flex space-x-4">
@@ -110,4 +127,3 @@ const Footer = () => {
 }
 
 export default Footer
-

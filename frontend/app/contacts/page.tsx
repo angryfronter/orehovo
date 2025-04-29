@@ -1,16 +1,32 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import type { Metadata } from "next"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Clock, MapPin, Phone, Mail } from "lucide-react"
 import dynamic from "next/dynamic"
+import { fetchContact } from "@/src/utils/api"
 
 const YandexMap = dynamic(() => import("@/components/yandex-map"), { ssr: false })
 
-export const metadata: Metadata = {
-  title: "Контакты | ДЦ Орехово",
-  description: "Контактная информация автосалона ДЦ Орехово. Адрес, телефон, схема проезда.",
-}
+// export const metadata: Metadata = {
+//   title: "Контакты | ДЦ Орехово",
+//   description: "Контактная информация автосалона ДЦ Орехово. Адрес, телефон, схема проезда.",
+// }
 
 export default function ContactsPage() {
+  const [contact, setContact] = useState<any | null>(null)
+
+  useEffect(() => {
+    fetchContact()
+      .then((data) => setContact(data.contact))
+      .catch((error) => {
+        console.error("Ошибка при загрузке контакта:", error)
+      })
+  }, [])
+
+  if (!contact) return <p>Загрузка...</p>
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Контакты</h1>
@@ -26,7 +42,7 @@ export default function ContactsPage() {
                 <MapPin className="w-5 h-5 text-primary mt-1" />
                 <div>
                   <h3 className="font-semibold">Адрес</h3>
-                  <p className="text-muted-foreground">115582, г. Москва, Ореховый бульвар, 26</p>
+                  <p className="text-muted-foreground">{contact.address}</p>
                 </div>
               </div>
 
@@ -35,8 +51,8 @@ export default function ContactsPage() {
                 <div>
                   <h3 className="font-semibold">Телефон</h3>
                   <p className="text-muted-foreground">
-                    <a href="tel:+74954959595" className="hover:text-primary">
-                      +7 (495) 495-95-95
+                    <a href={`tel:${contact.phone}`} className="hover:text-primary">
+                      {contact.phone}
                     </a>
                   </p>
                 </div>
@@ -47,8 +63,8 @@ export default function ContactsPage() {
                 <div>
                   <h3 className="font-semibold">Email</h3>
                   <p className="text-muted-foreground">
-                    <a href="mailto:info@dc-orehovo.ru" className="hover:text-primary">
-                      info@dc-orehovo.ru
+                    <a href={`mailto:${contact.email}`} className="hover:text-primary">
+                      {contact.email}
                     </a>
                   </p>
                 </div>
@@ -58,7 +74,7 @@ export default function ContactsPage() {
                 <Clock className="w-5 h-5 text-primary mt-1" />
                 <div>
                   <h3 className="font-semibold">Режим работы</h3>
-                  <p className="text-muted-foreground">Ежедневно с 9:00 до 21:00</p>
+                  <p className="text-muted-foreground">{contact.opening_hours}</p>
                 </div>
               </div>
             </CardContent>
@@ -97,4 +113,3 @@ export default function ContactsPage() {
     </div>
   )
 }
-
