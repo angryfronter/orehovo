@@ -80,3 +80,15 @@ Event.create!(
   location: "Автосалон BAIC",
   date: Date.new(2023, 7, 15)
 )
+
+Contact.create!(
+  address: "г. Москва, ул. Ленина, д. 1",
+  phone: "+7 (495) 123-45-67",
+  email: "example@example.com",
+  opening_hours: "Пн-Пт: 9:00 - 18:00, Сб-Вс: выходной",
+  website_name: "ДЦ Орехово",
+  website_description: "Официальный дилер BAIC в Москве",
+  facebook_link: "https://facebook.com/dc-orehovo",
+  vk_link: "https://vk.com/dc-orehovo",
+  instagram_link: "https://instagram.com/dc-orehovo"
+)

@@ -174,3 +174,27 @@ export async function deleteEvent(id: number): Promise<void> {
 
   if (!response.ok) throw new Error("Failed to delete event")
 }
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchContact(): Promise<{ contact: any }> {
+  const response = await fetch(`${API_URL}/api/contacts`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch contact")
+  }
+  const data = await response.json()
+  return { contact: data.contact }
+}
+
+export async function updateContact(id: number, contact: any): Promise<any> {
+  const response = await fetch(`${API_URL}/api/contacts/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contact }),
+  })
+
+  if (!response.ok) throw new Error("Failed to update contact")
+
+  const data = await response.json()
+  return data.contact
+}

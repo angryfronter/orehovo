@@ -36,12 +36,12 @@ export default function AdminLayout({
               Кредитные программы
             </Button>
           </Link>
-          <Link href="/admin/content">
+          {/* <Link href="/admin/content">
             <Button variant="ghost" className="w-full justify-start">
               <FileText className="mr-2 h-4 w-4" />
               Контент
             </Button>
-          </Link>
+          </Link> */}
         </nav>
       </aside>
       <main className="flex-1 p-8 overflow-y-auto">{children}</main>
