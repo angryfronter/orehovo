@@ -1,8 +1,8 @@
-module Cars
+module Promotions
   module Operations
     class Create < Trailblazer::Operation
-      step Model(Car, :new)
-      step Contract::Build(constant: Cars::Forms::Create)
+      step Model(Promotion, :new)
+      step Contract::Build(constant: Promotions::Forms::Create)
       step Contract::Validate()
       step Contract::Persist()
     end

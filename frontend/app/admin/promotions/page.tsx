@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
-import { fetchPromotions } from "@/src/utils/api"
+import { fetchPromotions, createPromotion, updatePromotion, deletePromotion } from "@/src/utils/api"
 
 interface Promotion {
   id: number
@@ -72,16 +72,24 @@ export default function PromotionsManagement() {
     }
   }
 
-  const handleAddPromotion = () => {
-    if (currentPromotion) {
-      if (isEditing) {
-        setPromotions(promotions.map((promo) => (promo.id === currentPromotion.id ? currentPromotion : promo)))
+  const handleAddPromotion = async () => {
+    if (!currentPromotion) return
+  
+    try {
+      if (isEditing && currentPromotion.id) {
+        const updated = await updatePromotion(currentPromotion.id, currentPromotion)
+        setPromotions(promotions.map(p => p.id === updated.id ? updated : p))
       } else {
-        setPromotions([...promotions, { ...currentPromotion, id: Date.now() }])
+        const created = await createPromotion(currentPromotion)
+        setPromotions([...promotions, created])
       }
+  
       setIsDialogOpen(false)
       setCurrentPromotion(null)
       setIsEditing(false)
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при сохранении акции")
     }
   }
 
@@ -91,8 +99,14 @@ export default function PromotionsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeletePromotion = (id: number) => {
-    setPromotions(promotions.filter((promo) => promo.id !== id))
+  const handleDeletePromotion = async (id: number) => {
+    try {
+      await deletePromotion(id)
+      setPromotions(promotions.filter(promo => promo.id !== id))
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при удалении акции")
+    }
   }
 
   return (
@@ -103,7 +117,14 @@ export default function PromotionsManagement() {
           <DialogTrigger asChild>
             <Button
               onClick={() => {
-                setCurrentPromotion(null)
+                setCurrentPromotion({
+                  id: 0,
+                  title: "",
+                  description: "",
+                  started_at: "",
+                  finished_at: "",
+                  image: null
+                })
                 setIsEditing(false)
               }}
             >

@@ -44,7 +44,7 @@ class Api::PromotionsController < ApplicationController
 
   def promotion_params
     params.require(:promotion).permit(
-      :id, :title, :description, :started_at, :finished_at
+      :id, :title, :description, :started_at, :finished_at, :image
     )
   end
 end

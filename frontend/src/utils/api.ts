@@ -10,6 +10,40 @@ export async function fetchPromotions(): Promise<{ promotions: any[] }> {
   return response.json()
 }
 
+export async function createPromotion(promotion: Omit<Promotion, "id">): Promise<Promotion> {
+  const response = await fetch(`${API_URL}/api/promotions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ promotion }),
+  })
+
+  if (!response.ok) throw new Error("Failed to create promotion")
+
+  const data = await response.json()
+  return data.promotion
+}
+
+export async function updatePromotion(id: number, promotion: Promotion): Promise<Promotion> {
+  const response = await fetch(`${API_URL}/api/promotions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ promotion }),
+  })
+
+  if (!response.ok) throw new Error("Failed to update promotion")
+
+  const data = await response.json()
+  return data.promotion
+}
+
+export async function deletePromotion(id: number): Promise<void> {
+  const response = await fetch(`${API_URL}/api/promotions/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) throw new Error("Failed to delete promotion")
+}
+
 export async function fetchCreditPrograms(): Promise<CreditProgram[]> {
   const response = await fetch(`${API_URL}/credit-programs`)
   if (!response.ok) {
