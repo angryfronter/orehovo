@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_29_104357) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_29_122844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -124,6 +124,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_104357) do
     t.decimal "interest_rate", precision: 5, scale: 2
     t.integer "term"
     t.decimal "down_payment", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "date"
+    t.string "location"
+    t.integer "event_type", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

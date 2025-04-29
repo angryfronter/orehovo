@@ -130,3 +130,47 @@ export async function updateCar(id: number, car: Car): Promise<Car> {
 
   return response.json()
 }
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchEvents(): Promise<{ events: any[] }> {
+  const response = await fetch(`${API_URL}/api/events`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch events")
+  }
+  return response.json()
+}
+
+export async function createEvent(event: Omit<Event, "id">): Promise<Event> {
+  const response = await fetch(`${API_URL}/api/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event }),
+  })
+
+  if (!response.ok) throw new Error("Failed to create event")
+
+  const data = await response.json()
+  return data.event
+}
+
+export async function updateEvent(id: number, event: Event): Promise<Event> {
+  const response = await fetch(`${API_URL}/api/events/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event }),
+  })
+
+  if (!response.ok) throw new Error("Failed to update event")
+
+  const data = await response.json()
+  return data.event
+}
+
+export async function deleteEvent(id: number): Promise<void> {
+  const response = await fetch(`${API_URL}/api/events/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) throw new Error("Failed to delete event")
+}

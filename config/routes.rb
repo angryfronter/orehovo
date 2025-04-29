@@ -17,5 +17,7 @@ Rails.application.routes.draw do
     resources :promotions, only: [:index, :show, :create, :destroy, :update]
 
     resources :credit_programs, only: [:index, :show, :create, :destroy, :update]
+
+    resources :events, only: [:index, :show, :create, :destroy, :update]
   end
 end

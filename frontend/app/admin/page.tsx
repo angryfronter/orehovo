@@ -51,7 +51,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/admin/users">
+        {/* <Link href="/admin/users">
           <Card className="hover:bg-gray-100 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-2xl font-bold">Пользователи</CardTitle>
@@ -61,7 +61,7 @@ export default function AdminDashboard() {
               <p className="text-gray-600">Управление пользователями и ролями</p>
             </CardContent>
           </Card>
-        </Link>
+        </Link> */}
         <Link href="/admin/settings">
           <Card className="hover:bg-gray-100 transition-colors cursor-pointer">
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">

@@ -73,3 +73,10 @@ CreditProgram.create!(
   term: 60,
   down_payment: 20
 )
+
+Event.create!(
+  name: "Тест-драйв нового BAIC X35",
+  description: "Приглашаем вас на тест-драйв нового кроссовера BAIC X35",
+  location: "Автосалон BAIC",
+  date: Date.new(2023, 7, 15)
+)

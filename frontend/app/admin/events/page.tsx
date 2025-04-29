@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,40 +8,51 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { fetchEvents, createEvent, updateEvent, deleteEvent } from "@/src/utils/api"
 
 interface Event {
   id: string
-  title: string
+  name: string
   description: string
   date: Date
   location: string
-  type: "test-drive" | "presentation" | "sale"
+  event_type: "test-drive" | "presentation" | "sale"
 }
 
-const initialEvents: Event[] = [
-  {
-    id: "1",
-    title: "Тест-драйв нового BAIC X35",
-    description: "Приглашаем вас на тест-драйв нового кроссовера BAIC X35",
-    date: new Date("2023-07-15"),
-    location: "ДЦ Орехово, Ореховый бульвар, 26",
-    type: "test-drive",
-  },
-  {
-    id: "2",
-    title: "Презентация EXEED TXL",
-    description: "Торжественная презентация нового EXEED TXL",
-    date: new Date("2023-07-20"),
-    location: "ДЦ Орехово, Ореховый бульвар, 26",
-    type: "presentation",
-  },
-]
-
 export default function EventsManagement() {
-  const [events, setEvents] = useState<Event[]>(initialEvents)
+  const [events, setEvents] = useState<Event[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const data = await fetchEvents()
+
+        // Преобразуем ответ API в формат нужный фронту
+        const mappedEvents = data.events.map((event: any) => ({
+          id: event.id,
+          name: event.name,
+          description: event.description,
+          date: new Date(event.date),
+          location: event.location,
+          event_type: event.event_type,
+        }))
+
+        setEvents(mappedEvents)
+      } catch (err: any) {
+        console.error(err)
+        setError(err.message || "Ошибка загрузки данных")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  
+    loadEvents()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -99,13 +110,13 @@ export default function EventsManagement() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">
+                <Label htmlFor="name" className="text-right">
                   Название
                 </Label>
                 <Input
-                  id="title"
-                  name="title"
-                  value={currentEvent?.title || ""}
+                  id="name"
+                  name="name"
+                  value={currentEvent?.name || ""}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -148,13 +159,13 @@ export default function EventsManagement() {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="type" className="text-right">
+                <Label htmlFor="event_type" className="text-right">
                   Тип
                 </Label>
                 <select
-                  id="type"
-                  name="type"
-                  value={currentEvent?.type || ""}
+                  id="event_type"
+                  name="event_type"
+                  value={currentEvent?.event_type || ""}
                   onChange={handleInputChange}
                   className="col-span-3"
                 >
@@ -182,10 +193,10 @@ export default function EventsManagement() {
         <TableBody>
           {events.map((event) => (
             <TableRow key={event.id}>
-              <TableCell>{event.title}</TableCell>
+              <TableCell>{event.name}</TableCell>
               <TableCell>{event.date.toLocaleDateString()}</TableCell>
               <TableCell>{event.location}</TableCell>
-              <TableCell>{event.type}</TableCell>
+              <TableCell>{event.event_type}</TableCell>
               <TableCell>
                 <Button variant="ghost" size="icon" onClick={() => handleEditEvent(event)}>
                   <Pencil className="h-4 w-4" />
