@@ -11,34 +11,53 @@ import { Pencil, Trash2, Plus, X } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image"
-
-interface CarColor {
-  name: string
-  hex: string
-  images: string[]
-}
-
-interface CarConfiguration {
-  name: string
-  price: number
-  features: string[]
-}
+import { Switch } from "@/components/ui/switch"
+import { EyeOff, Flame } from "lucide-react"
 
 interface Car {
   id: number
-  brand: string
+  external_id: number
+  unique_id: string
+  offer_type: string
+  mark: string
   model: string
-  year: number
-  price: number
-  engine: string
-  transmission: string
-  drivetrain: string
-  fuel_type: string
+  generation: string
+  modification: string
+  modification_auto_ru_xml_id: string
+  complectation: string
   body_type: string
+  category: string
+  car_type: string
+  section: string
+  dealer_id: number
+  dealer_name: string
+  dealer_description: string
+  engine_power: number
+  engine_power_kwh: number
+  engine_volume: number
+  engine_type: string
+  gearbox: string
+  drive_type: string
+  color: string
+  is_metallic: boolean
+  wheel: string
+  owners: string
+  state: string
+  passport:string
+  year: number
+  run: number
+  price: number
+  price_old: number
+  vin: string
   description: string
-  colors: CarColor[]
-  configurations: CarConfiguration[]
-  specifications: Record<string, string>
+  note: string
+  specifications: string
+  equipment: string
+  equipment_groups: string
+  tags: string[]
+  is_active: boolean
+  visible: boolean
+  is_hot_offer: boolean
   gallery: string[]
 }
 
@@ -55,33 +74,51 @@ export default function CarsManagement() {
       try {
         const data = await fetchCars()
 
-        // Преобразуем ответ API в формат нужный фронту
         const mappedCars = data.cars.map((car: any) => ({
           id: car.id,
-          brand: car.brand,
+          external_id: car.internal_id,
+          unique_id: car.unique_id,
+          offer_type: car.offer_type,
+          mark: car.mark,
           model: car.model,
-          year: car.year,
-          price: car.price,
-          engine: car.car_engines.length > 0 ? `${car.car_engines[0].displacement / 1000}L` : "",
-          transmission: car.transmission,
-          drivetrain: car.drivetrain,
-          fuel_type: car.fuel_type,
+          generation: car.generation,
+          modification: car.modification,
+          modification_auto_ru_xml_id: car.modification_auto_ru_xml_id,
+          complectation: car.complectation,
           body_type: car.body_type,
-          description: "", // Бэкенд пока description не возвращает
-          colors: car.car_colors.map((color: any) => ({
-            name: color.name,
-            hex: color.hex,
-            images: [], // Пока у цветов нет картинок
-          })),
-          configurations: car.car_configurations.map((config: any) => ({
-            name: config.name,
-            price: config.price,
-            features: config.features,
-          })),
-          specifications: {
-            // Тут можно подставить пустые данные или если появится на бэке — дописать
-          },
-          gallery: car.images.length ? car.images : [car.image], // Используем main image если нет галереи
+          category: car.category,
+          car_type: car.car_type,
+          section: car.section,
+          dealer_id: car.dealer_id,
+          dealer_name: car.dealer_name,
+          dealer_description: car.dealer_description,
+          engine_power: car.engine_power,
+          engine_power_kwh: car.engine_power_kwh,
+          engine_volume: car.engine_volume,
+          engine_type: car.engine_type,
+          gearbox: car.gearbox,
+          drive_type: car.drive_type,
+          color: car.color,
+          is_metallic: car.is_metallic,
+          wheel: car.wheel,
+          owners: car.owners,
+          state: car.state,
+          passport: car.passport,
+          year: car.year,
+          run: car.run,
+          price: car.price,
+          price_old: car.price_old,
+          vin: car.vin,
+          description: car.description,
+          note: car.note,
+          specifications: car.specifications,
+          equipment: car.equipment,
+          equipment_groups: car.equipment_groups,
+          tags: car.tags,
+          is_active: car.is_active,
+          visible: car.visible,
+          is_hot_offer: car.is_hot_offer,
+          gallery: car.images.length ? car.images : [car.image],
         }))
 
         setCars(mappedCars)
@@ -107,28 +144,6 @@ export default function CarsManagement() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof Car) => {
     if (currentCar) {
       setCurrentCar({ ...currentCar, [field]: e.target.value })
-    }
-  }
-
-  const handleColorChange = (index: number, field: keyof CarColor, value: string) => {
-    if (currentCar) {
-      const newColors = [...currentCar.colors]
-      newColors[index] = { ...newColors[index], [field]: value }
-      setCurrentCar({ ...currentCar, colors: newColors })
-    }
-  }
-
-  const handleConfigurationChange = (index: number, field: keyof CarConfiguration, value: string | number) => {
-    if (currentCar) {
-      const newConfigurations = [...currentCar.configurations]
-      newConfigurations[index] = { ...newConfigurations[index], [field]: value }
-      setCurrentCar({ ...currentCar, configurations: newConfigurations })
-    }
-  }
-
-  const handleSpecificationChange = (key: string, value: string) => {
-    if (currentCar) {
-      setCurrentCar({ ...currentCar, specifications: { ...currentCar.specifications, [key]: value } })
     }
   }
 
@@ -168,33 +183,6 @@ export default function CarsManagement() {
     }
   }  
 
-  const handleAddColor = () => {
-    if (currentCar) {
-      setCurrentCar({
-        ...currentCar,
-        colors: [...currentCar.colors, { name: "", hex: "", images: [] }],
-      })
-    }
-  }
-
-  const handleAddConfiguration = () => {
-    if (currentCar) {
-      setCurrentCar({
-        ...currentCar,
-        configurations: [...currentCar.configurations, { name: "", price: 0, features: [] }],
-      })
-    }
-  }
-
-  const handleAddSpecification = () => {
-    if (currentCar) {
-      setCurrentCar({
-        ...currentCar,
-        specifications: { ...currentCar.specifications, "": "" },
-      })
-    }
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -226,82 +214,64 @@ export default function CarsManagement() {
               <TabsContent value="general" className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="brand">Марка</Label>
-                    <Input id="brand" value={currentCar?.brand || ""} onChange={(e) => handleInputChange(e, "brand")} />
+                    <Label htmlFor="mark">Марка</Label>
+                    <Input id="mark" value={currentCar?.mark || ""} onChange={(e) => handleInputChange(e, "mark")} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="model">Модель</Label>
                     <Input id="model" value={currentCar?.model || ""} onChange={(e) => handleInputChange(e, "model")} />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="generation">Генерация</Label>
+                    <Input id="generation" value={currentCar?.generation || ""} onChange={(e) => handleInputChange(e, "generation")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="modification">Модификация</Label>
+                    <Input id="modification" value={currentCar?.modification || ""} onChange={(e) => handleInputChange(e, "modification")} />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="year">Год</Label>
-                    <Input
-                      id="year"
-                      type="number"
-                      value={currentCar?.year || ""}
-                      onChange={(e) => handleInputChange(e, "year")}
-                    />
+                    <Input id="year" value={currentCar?.year || ""} onChange={(e) => handleInputChange(e, "year")} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="price">Цена</Label>
-                    <Input
-                      id="price"
-                      type="number"
-                      value={currentCar?.price || ""}
-                      onChange={(e) => handleInputChange(e, "price")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="engine">Двигатель</Label>
-                    <Input
-                      id="engine"
-                      value={currentCar?.engine || ""}
-                      onChange={(e) => handleInputChange(e, "engine")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="transmission">Трансмиссия</Label>
-                    <Input
-                      id="transmission"
-                      value={currentCar?.transmission || ""}
-                      onChange={(e) => handleInputChange(e, "transmission")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="drivetrain">Привод</Label>
-                    <Input
-                      id="drivetrain"
-                      value={currentCar?.drivetrain || ""}
-                      onChange={(e) => handleInputChange(e, "drivetrain")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="fuel_type">Тип топлива</Label>
-                    <Input
-                      id="fuel_type"
-                      value={currentCar?.fuel_type || ""}
-                      onChange={(e) => handleInputChange(e, "fuel_type")}
-                    />
+                    <Input id="price" value={currentCar?.price || ""} onChange={(e) => handleInputChange(e, "price")} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="body_type">Тип кузова</Label>
-                    <Input
-                      id="body_type"
-                      value={currentCar?.body_type || ""}
-                      onChange={(e) => handleInputChange(e, "body_type")}
+                    <Input id="body_type" value={currentCar?.body_type || ""} onChange={(e) => handleInputChange(e, "body_type")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="run">Пробег</Label>
+                    <Input id="run" value={currentCar?.run || ""} onChange={(e) => handleInputChange(e, "run")} />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="visible">Видимость</Label>
+                    <Switch
+                      id="visible"
+                      checked={currentCar?.visible || false}
+                      onCheckedChange={(checked) =>
+                        setCurrentCar((prev) => prev ? { ...prev, visible: checked } : prev)
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="is_hot_offer">Горячее предложение</Label>
+                    <Switch
+                      id="is_hot_offer"
+                      checked={currentCar?.is_hot_offer || false}
+                      onCheckedChange={(checked) =>
+                        setCurrentCar((prev) => prev ? { ...prev, is_hot_offer: checked } : prev)
+                      }
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Описание</Label>
-                  <Textarea
-                    id="description"
-                    value={currentCar?.description || ""}
-                    onChange={(e) => handleInputChange(e, "description")}
-                  />
+                  <Textarea id="description" value={currentCar?.description || ""} onChange={(e) => handleInputChange(e, "description")} />
                 </div>
               </TabsContent>
-              <TabsContent value="colors" className="space-y-4">
+              {/* <TabsContent value="colors" className="space-y-4">
                 {currentCar?.colors.map((color, index) => (
                   <div key={index} className="space-y-2 border p-4 rounded-md">
                     <div className="flex justify-between items-center">
@@ -380,10 +350,10 @@ export default function CarsManagement() {
                       </div>
                     </div>
                   </div>
-                ))}
-                <Button onClick={handleAddColor}>Добавить цвет</Button>
-              </TabsContent>
-              <TabsContent value="configurations" className="space-y-4">
+                ))} */}
+                {/* <Button onClick={handleAddColor}>Добавить цвет</Button>
+              </TabsContent> */}
+              {/* <TabsContent value="configurations" className="space-y-4">
                 {currentCar?.configurations.map((config, index) => (
                   <div key={index} className="space-y-2 border p-4 rounded-md">
                     <div className="flex justify-between items-center">
@@ -431,8 +401,8 @@ export default function CarsManagement() {
                   </div>
                 ))}
                 <Button onClick={handleAddConfiguration}>Добавить комплектацию</Button>
-              </TabsContent>
-              <TabsContent value="specifications" className="space-y-4">
+              </TabsContent> */}
+              {/* <TabsContent value="specifications" className="space-y-4">
                 {Object.entries(currentCar?.specifications || {}).map(([key, value], index) => (
                   <div key={index} className="grid grid-cols-2 gap-4">
                     <Input
@@ -455,7 +425,7 @@ export default function CarsManagement() {
                   </div>
                 ))}
                 <Button onClick={handleAddSpecification}>Добавить характеристику</Button>
-              </TabsContent>
+              </TabsContent> */}
               <TabsContent value="gallery" className="space-y-4">
                 <div className="flex flex-wrap gap-2">
                   {currentCar?.gallery.map((image, index) => (
@@ -518,10 +488,10 @@ export default function CarsManagement() {
         <TableBody>
           {cars.map((car) => (
             <TableRow key={car.id}>
-              <TableCell>{car.brand}</TableCell>
+              <TableCell>{car.mark}</TableCell>
               <TableCell>{car.model}</TableCell>
               <TableCell>{car.year}</TableCell>
-              <TableCell>{car.price.toLocaleString()} ₽</TableCell>
+              <TableCell>{car.price} ₽</TableCell>
               <TableCell>
                 <Button variant="ghost" size="icon" onClick={() => handleEditCar(car)}>
                   <Pencil className="h-4 w-4" />
@@ -529,6 +499,12 @@ export default function CarsManagement() {
                 <Button variant="ghost" size="icon" onClick={() => handleDeleteCar(car.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
+              </TableCell>
+              <TableCell>
+                <div className="flex space-x-2">
+                  {!car.visible && <EyeOff className="text-muted-foreground" size={18} />}
+                  {car.is_hot_offer && <Flame className="text-red-500" size={18} />}
+                </div>
               </TableCell>
             </TableRow>
           ))}

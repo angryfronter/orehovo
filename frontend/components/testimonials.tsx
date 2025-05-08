@@ -85,7 +85,7 @@ export default function Testimonials() {
                 <p className="text-gray-600 mb-2">{testimonial.text}</p>
                 <div className="flex items-center mt-2">
                   <Image
-                    src="https://yandex.ru/images/favicon.ico"
+                    src="https://avatars.mds.yandex.net/get-yapic/56823/Ty7nvMtzYpKmkNkKYSyP9oZeEUE-1/orig"
                     alt="Яндекс Карты"
                     width={16}
                     height={16}

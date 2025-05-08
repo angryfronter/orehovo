@@ -116,7 +116,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-muted-foreground">
-          <p>&copy; 2023 ДЦ Орехово. Все права защищены.</p>
+          <p>&copy; 2025 ДЦ Орехово. Все права защищены.</p>
         </div>
       </div>
 

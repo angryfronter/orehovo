@@ -43,10 +43,13 @@ class Api::CarsController < ApplicationController
   end
 
   def car_params
-    params.require(:car).permit(
-      :id, :brand, :model, :price, :year, :transmission, :drivetrain, :fuel_type, :fuel_tank, :body_type, :color,
-      car_colors: %i[name hex], car_configurations: %i[name price features], car_engines: %i[engine_type power torque displacement],
-      car_features: %i[category description]
+    params.require(:car).permit(:id, :mark, :model, :external_id, :unique_id, :modification, :modification_auto_ru_xml_id, :complectation,
+                                :car_type, :dealer_id, :dealer_name, :dealer_description, :engine_power, :engine_power_kwh,
+                                :engine_volume, :is_active, :visible, :is_hot_offer, :year, :run, :price, :price_old, :vin,
+                                :is_metallic, :description, :note, offer_type: {}, generation: {},
+                                body_type: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
+                                color: {}, wheel: {}, owners: {}, state: {}, passport: {}, specifications: [], equipment: {},
+                                equipment_groups: {}, tags: []
     )
   end
 end
