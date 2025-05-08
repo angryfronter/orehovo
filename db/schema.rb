@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_08_111220) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_111220) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "cars_credit_programs", id: false, force: :cascade do |t|
+    t.bigint "car_id", null: false
+    t.bigint "credit_program_id", null: false
+    t.index ["car_id"], name: "index_cars_credit_programs_on_car_id"
+    t.index ["credit_program_id"], name: "index_cars_credit_programs_on_credit_program_id"
+  end
+
+  create_table "cars_promotions", id: false, force: :cascade do |t|
+    t.bigint "car_id", null: false
+    t.bigint "promotion_id", null: false
+    t.index ["car_id"], name: "index_cars_promotions_on_car_id"
+    t.index ["promotion_id"], name: "index_cars_promotions_on_promotion_id"
+  end
+
   create_table "contacts", force: :cascade do |t|
     t.string "address"
     t.string "phone"
@@ -111,6 +125,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_111220) do
     t.decimal "interest_rate", precision: 5, scale: 2
     t.integer "term"
     t.decimal "down_payment", precision: 10, scale: 2
+    t.boolean "visible", default: true
+    t.decimal "min_amount", precision: 15, scale: 2
+    t.decimal "max_amount", precision: 15, scale: 2
+    t.datetime "started_at"
+    t.datetime "finished_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -130,6 +149,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_111220) do
     t.text "description"
     t.datetime "started_at"
     t.datetime "finished_at"
+    t.boolean "visible", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { fetchCreditPrograms, createCreditProgram, updateCreditProgram, deleteCreditProgram } from "@/src/utils/api"
+import { Switch } from "@/components/ui/switch"
+import { EyeOff } from "lucide-react"
 
 interface CreditProgram {
   id: number
@@ -17,6 +19,11 @@ interface CreditProgram {
   interest_rate: number
   term: number
   down_payment: number
+  visible: boolean
+  min_amount?: number
+  max_amount?: number
+  started_at: string
+  finished_at: string
 }
 
 export default function CreditProgramsManagement() {
@@ -32,7 +39,6 @@ export default function CreditProgramsManagement() {
       try {
         const data = await fetchCreditPrograms()
 
-        // Преобразуем ответ API в формат нужный фронту
         const mappedCreditPrograms = data.credit_programs.map((program: any) => ({
           id: program.id,
           name: program.name,
@@ -40,6 +46,11 @@ export default function CreditProgramsManagement() {
           interest_rate: program.interest_rate,
           term: program.term,
           down_payment: program.down_payment,
+          visible: program.visible,
+          min_amount: program.min_amount,
+          max_amount: program.max_amount,
+          started_at: program.started_at,
+          finished_at: program.finished_at
         }))
 
         setCreditPrograms(mappedCreditPrograms)
@@ -116,6 +127,11 @@ export default function CreditProgramsManagement() {
                   interest_rate: 0,
                   term: 0,
                   down_payment: 0,
+                  visible: true,
+                  min_amount: 0,
+                  max_amount: 0,
+                  started_at: "",
+                  finished_at: ""
                 })
                 setIsEditing(false)
               }}
@@ -193,6 +209,42 @@ export default function CreditProgramsManagement() {
                   className="col-span-3"
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="started_at" className="text-right">
+                  Дата начала
+                </Label>
+                <Input
+                  id="started_at"
+                  name="started_at"
+                  type="date"
+                  value={currentProgram?.started_at || ""}
+                  onChange={handleInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="finished_at" className="text-right">
+                  Дата окончания
+                </Label>
+                <Input
+                  id="finished_at"
+                  name="finished_at"
+                  type="date"
+                  value={currentProgram?.finished_at || ""}
+                  onChange={handleInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="visible">Видимость</Label>
+                <Switch
+                  id="visible"
+                  checked={currentProgram?.visible || false}
+                  onCheckedChange={(checked) =>
+                    setCurrentProgram((prev) => prev ? { ...prev, visible: checked } : prev)
+                  }
+                />
+              </div>
             </div>
             <Button onClick={handleAddProgram}>{isEditing ? "Сохранить изменения" : "Добавить программу"}</Button>
           </DialogContent>
@@ -225,6 +277,11 @@ export default function CreditProgramsManagement() {
                 <Button variant="ghost" size="icon" onClick={() => handleDeleteProgram(program.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
+              </TableCell>
+              <TableCell>
+                <div className="flex space-x-2">
+                  {!program.visible && <EyeOff className="text-muted-foreground" size={18} />}
+                </div>
               </TableCell>
             </TableRow>
           ))}

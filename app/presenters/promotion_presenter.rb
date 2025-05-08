@@ -1,5 +1,5 @@
 class PromotionPresenter < ApplicationPresenter
-  MODEL_ATTRIBUTES = %i[id title description started_at finished_at].freeze
+  MODEL_ATTRIBUTES = %i[id title description started_at finished_at visible].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
   delegate(:image, to: :record)
@@ -12,6 +12,7 @@ class PromotionPresenter < ApplicationPresenter
       started_at: localize_time(started_at, :time_stamp),
       finished_at: localize_time(finished_at, :time_stamp),
       image: file_url(image, :main),
+      visible:
     }
   end
 end

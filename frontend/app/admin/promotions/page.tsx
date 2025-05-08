@@ -10,6 +10,8 @@ import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
 import { fetchPromotions, createPromotion, updatePromotion, deletePromotion } from "@/src/utils/api"
+import { Switch } from "@/components/ui/switch"
+import { EyeOff } from "lucide-react"
 
 interface Promotion {
   id: number
@@ -18,6 +20,7 @@ interface Promotion {
   started_at: string
   finished_at: string
   image: string | null
+  visible: boolean
 }
 
 export default function PromotionsManagement() {
@@ -40,6 +43,7 @@ export default function PromotionsManagement() {
           description: promotion.description,
           started_at: promotion.started_at,
           finished_at: promotion.finished_at,
+          visible: promotion.visible
         }))
 
         setPromotions(mappedPromotions)
@@ -123,7 +127,8 @@ export default function PromotionsManagement() {
                   description: "",
                   started_at: "",
                   finished_at: "",
-                  image: null
+                  image: null,
+                  visible: true
                 })
                 setIsEditing(false)
               }}
@@ -187,6 +192,16 @@ export default function PromotionsManagement() {
                   className="col-span-3"
                 />
               </div>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="visible">Видимость</Label>
+                <Switch
+                  id="visible"
+                  checked={currentPromotion?.visible || false}
+                  onCheckedChange={(checked) =>
+                    setCurrentPromotion((prev) => prev ? { ...prev, visible: checked } : prev)
+                  }
+                />
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="image" className="text-right">
                   Изображение
@@ -234,6 +249,11 @@ export default function PromotionsManagement() {
                 <Button variant="ghost" size="icon" onClick={() => handleDeletePromotion(promo.id)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
+              </TableCell>
+              <TableCell>
+                <div className="flex space-x-2">
+                  {!promo.visible && <EyeOff className="text-muted-foreground" size={18} />}
+                </div>
               </TableCell>
             </TableRow>
           ))}

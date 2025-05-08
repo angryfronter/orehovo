@@ -44,7 +44,7 @@ class Api::CreditProgramsController < ApplicationController
 
   def credit_program_params
     params.require(:credit_program).permit(
-      :id, :name, :description, :interest_rate, :term, :down_payment  
+      :id, :name, :description, :interest_rate, :term, :down_payment, :visible, :min_amount, :max_amount, :started_at, :finished_at
     )
   end
 end
