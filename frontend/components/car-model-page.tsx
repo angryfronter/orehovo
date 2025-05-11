@@ -17,7 +17,7 @@ interface CarModelPageProps {
   price: number
   discount: number
   monthlyPayment: number
-  images: { [colorName: string]: string[] }
+  images: string[]
   specifications: Record<string, string>
   features: {
     comfort: string[]
@@ -50,12 +50,12 @@ export default function CarModelPage({
   otherModels,
 }: CarModelPageProps) {
   const [selectedColor, setSelectedColor] = useState(colors[0])
-  const [colorImages, setColorImages] = useState<string[]>(images[colors[0].name] || [])
+  // const [colorImages, setColorImages] = useState<string[]>(images[colors[0].name] || [])
   const [openForm, setOpenForm] = useState<"test-drive" | "purchase" | null>(null)
 
   const handleColorChange = (color: (typeof colors)[0]) => {
     setSelectedColor(color)
-    setColorImages(images[color.name] || [])
+    // setColorImages(images[color.name] || [])
   }
 
   return (
@@ -64,8 +64,8 @@ export default function CarModelPage({
         <div>
           <div className="relative aspect-video mb-4">
             <Image
-              src={colorImages[0] || "/placeholder.svg"}
-              alt={`${brand} ${model} - ${selectedColor.name}`}
+              src={images[0] || "/placeholder.svg"}
+              alt={`${brand} ${model}`}
               layout="fill"
               objectFit="contain"
               className="rounded-lg"
@@ -80,16 +80,16 @@ export default function CarModelPage({
                   onClick={() => handleColorChange(color)}
                   className={cn(
                     "w-12 h-12 rounded-full transition-all",
-                    selectedColor.name === color.name ? "ring-2 ring-primary ring-offset-2" : "ring-1 ring-gray-200",
+                    // selectedColor.name === color.name ? "ring-2 ring-primary ring-offset-2" : "ring-1 ring-gray-200",
                   )}
                   style={{ backgroundColor: color.hex }}
                   title={color.name}
                   aria-label={`Выбрать цвет ${color.name}`}
-                  aria-pressed={selectedColor.name === color.name}
+                  // aria-pressed={selectedColor.name === color.name}
                 />
               ))}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">Выбран цвет: {selectedColor.name}</p>
+            {/* <p className="text-sm text-muted-foreground mt-2">Выбран цвет: {selectedColor.name}</p> */}
           </div>
         </div>
 

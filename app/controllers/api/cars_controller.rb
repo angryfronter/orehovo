@@ -28,6 +28,9 @@ class Api::CarsController < ApplicationController
   def update
     car = Car.find(params[:id])
     if car.update(car_params)
+      car.promotions = Promotion.where(id: params[:car][:promotions]) if params[:car][:promotions]
+      car.credit_programs = CreditProgram.where(id: params[:car][:credit_program_ids]) if params[:car][:credit_program_ids]
+
       render json: { car: car }, status: :ok
     else
       render json: { error: "Failed to update car" }, status: :unprocessable_entity
@@ -49,7 +52,7 @@ class Api::CarsController < ApplicationController
                                 :is_metallic, :description, :note, offer_type: {}, generation: {},
                                 body_type: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
                                 color: {}, wheel: {}, owners: {}, state: {}, passport: {}, specifications: [], equipment: {},
-                                equipment_groups: {}, tags: []
+                                equipment_groups: {}, tags: [], credit_program_ids: []
     )
   end
 end

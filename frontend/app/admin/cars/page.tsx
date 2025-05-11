@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { fetchCars, deleteCar, updateCar } from "@/src/utils/api"
+import { fetchCars, deleteCar, updateCar, fetchPromotions } from "@/src/utils/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,6 +13,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image"
 import { Switch } from "@/components/ui/switch"
 import { EyeOff, Flame } from "lucide-react"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover"
+import { Command, CommandItem, CommandList } from "@/components/ui/command"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Check } from "lucide-react"
 
 interface Car {
   id: number
@@ -58,7 +66,14 @@ interface Car {
   is_active: boolean
   visible: boolean
   is_hot_offer: boolean
+  promotions: number[]
+  credit_programs: string[]
   gallery: string[]
+}
+
+interface Promotion {
+  id: number
+  title: string
 }
 
 export default function CarsManagement() {
@@ -68,6 +83,29 @@ export default function CarsManagement() {
   const [isEditing, setIsEditing] = useState(false)
   const [currentCar, setCurrentCar] = useState<Car | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [promotions, setPromotions] = useState<Promotion[]>([])
+
+  useEffect(() => {
+    async function loadPromotions() {
+      try {
+        const data = await fetchPromotions()
+
+        const mappedPromotions = data.promotions.map((promotion: any) => ({
+          id: promotion.id,
+          title: promotion.title
+        }))
+
+        setPromotions(mappedPromotions)
+      } catch (err: any) {
+        console.error(err)
+        setError(err.message || "Ошибка загрузки данных")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+  
+    loadPromotions()
+  }, [])
 
   useEffect(() => {
     async function loadCars() {
@@ -191,7 +229,54 @@ export default function CarsManagement() {
           <DialogTrigger asChild>
             <Button
               onClick={() => {
-                setCurrentCar(null)
+                setCurrentCar({
+                  id: 0,
+                  external_id: 0,
+                  unique_id: "",
+                  offer_type: "",
+                  mark: "",
+                  model: "",
+                  generation: "",
+                  modification: "",
+                  modification_auto_ru_xml_id: "",
+                  complectation: "",
+                  body_type: "",
+                  category: "",
+                  car_type: "",
+                  section: "",
+                  dealer_id: 0,
+                  dealer_name: "",
+                  dealer_description: "",
+                  engine_power: 0,
+                  engine_power_kwh: 0,
+                  engine_volume: 0,
+                  engine_type: "",
+                  gearbox: "",
+                  drive_type: "",
+                  color: "",
+                  is_metallic: false,
+                  wheel: "",
+                  owners: "",
+                  state: "",
+                  passport:"",
+                  year: 0,
+                  run: 0,
+                  price: 0,
+                  price_old: 0,
+                  vin: "",
+                  description: "",
+                  note:"",
+                  specifications:"",
+                  equipment:"",
+                  equipment_groups:"",
+                  tags:[""],
+                  is_active:false,
+                  visible:false,
+                  is_hot_offer:false,
+                  gallery: [],
+                  promotions: [],
+                  credit_programs: [],
+                })
                 setIsEditing(false)
               }}
             >
@@ -265,167 +350,55 @@ export default function CarsManagement() {
                       }
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="promotions">Акции</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between">
+                          {currentCar?.promotions?.length
+                            ? promotions
+                                .filter(p => currentCar.promotions.includes(Number(p.id)))
+                                .map(p => p.title)
+                                .join(", ")
+                            : "Выбрать акции"}
+                          <span className="ml-2">&#9662;</span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandList>
+                            {promotions.map(promotion => {
+                              const isSelected = Array.isArray(currentCar?.promotions) && currentCar.promotions.includes(Number(promotion.id))
+                              return (
+                                <CommandItem
+                                  key={promotion.id}
+                                  onSelect={() => {
+                                    if (!currentCar) return
+                                    const promoId = Number(promotion.id)
+                                    const updatedPromotions = isSelected
+                                      ? currentCar.promotions.filter(id => id !== promoId)
+                                      : [...(currentCar.promotions || []), promoId]
+                                    setCurrentCar({ ...currentCar, promotions: updatedPromotions })
+                                  }}
+                                  className="flex items-center gap-2"
+                                >
+                                  <Checkbox checked={isSelected} />
+                                  <span>{promotion.title}</span>
+                                  {isSelected && <Check className="ml-auto h-4 w-4 text-primary" />}
+                                </CommandItem>
+                              )
+                            })}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Описание</Label>
                   <Textarea id="description" value={currentCar?.description || ""} onChange={(e) => handleInputChange(e, "description")} />
                 </div>
               </TabsContent>
-              {/* <TabsContent value="colors" className="space-y-4">
-                {currentCar?.colors.map((color, index) => (
-                  <div key={index} className="space-y-2 border p-4 rounded-md">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-semibold">Цвет {index + 1}</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (currentCar) {
-                            const newColors = currentCar.colors.filter((_, i) => i !== index)
-                            setCurrentCar({ ...currentCar, colors: newColors })
-                          }
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor={`colorName${index}`}>Название цвета</Label>
-                        <Input
-                          id={`colorName${index}`}
-                          value={color.name}
-                          onChange={(e) => handleColorChange(index, "name", e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`colorHex${index}`}>Код цвета (HEX)</Label>
-                        <Input
-                          id={`colorHex${index}`}
-                          value={color.hex}
-                          onChange={(e) => handleColorChange(index, "hex", e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Изображения</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {color.images.map((image, imageIndex) => (
-                          <div key={imageIndex} className="relative">
-                            <Image
-                              src={image || "/placeholder.svg"}
-                              alt={`Color ${color.name}`}
-                              width={100}
-                              height={100}
-                              className="rounded-md"
-                            />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-0 right-0"
-                              onClick={() => {
-                                if (currentCar) {
-                                  const newColors = [...currentCar.colors]
-                                  newColors[index].images = newColors[index].images.filter((_, i) => i !== imageIndex)
-                                  setCurrentCar({ ...currentCar, colors: newColors })
-                                }
-                              }}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            if (currentCar) {
-                              const newColors = [...currentCar.colors]
-                              newColors[index].images.push("/placeholder.svg")
-                              setCurrentCar({ ...currentCar, colors: newColors })
-                            }
-                          }}
-                        >
-                          Добавить изображение
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))} */}
-                {/* <Button onClick={handleAddColor}>Добавить цвет</Button>
-              </TabsContent> */}
-              {/* <TabsContent value="configurations" className="space-y-4">
-                {currentCar?.configurations.map((config, index) => (
-                  <div key={index} className="space-y-2 border p-4 rounded-md">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-semibold">Комплектация {index + 1}</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          if (currentCar) {
-                            const newConfigurations = currentCar.configurations.filter((_, i) => i !== index)
-                            setCurrentCar({ ...currentCar, configurations: newConfigurations })
-                          }
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor={`configName${index}`}>Название комплектации</Label>
-                        <Input
-                          id={`configName${index}`}
-                          value={config.name}
-                          onChange={(e) => handleConfigurationChange(index, "name", e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`configPrice${index}`}>Цена</Label>
-                        <Input
-                          id={`configPrice${index}`}
-                          type="number"
-                          value={config.price}
-                          onChange={(e) => handleConfigurationChange(index, "price", Number(e.target.value))}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Особенности</Label>
-                      <Textarea
-                        value={config.features.join("\n")}
-                        onChange={(e) => handleConfigurationChange(index, "features", e.target.value.split("\n"))}
-                        placeholder="Введите особенности, каждую с новой строки"
-                      />
-                    </div>
-                  </div>
-                ))}
-                <Button onClick={handleAddConfiguration}>Добавить комплектацию</Button>
-              </TabsContent> */}
-              {/* <TabsContent value="specifications" className="space-y-4">
-                {Object.entries(currentCar?.specifications || {}).map(([key, value], index) => (
-                  <div key={index} className="grid grid-cols-2 gap-4">
-                    <Input
-                      value={key}
-                      onChange={(e) => {
-                        if (currentCar) {
-                          const newSpecs = { ...currentCar.specifications }
-                          delete newSpecs[key]
-                          newSpecs[e.target.value] = value
-                          setCurrentCar({ ...currentCar, specifications: newSpecs })
-                        }
-                      }}
-                      placeholder="Характеристика"
-                    />
-                    <Input
-                      value={value}
-                      onChange={(e) => handleSpecificationChange(key, e.target.value)}
-                      placeholder="Значение"
-                    />
-                  </div>
-                ))}
-                <Button onClick={handleAddSpecification}>Добавить характеристику</Button>
-              </TabsContent> */}
               <TabsContent value="gallery" className="space-y-4">
                 <div className="flex flex-wrap gap-2">
                   {currentCar?.gallery.map((image, index) => (
