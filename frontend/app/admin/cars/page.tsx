@@ -23,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Check } from "lucide-react"
 
 interface Car {
-  id: number
+  id: string
   external_id: number
   unique_id: string
   offer_type: string
@@ -72,7 +72,7 @@ interface Car {
 }
 
 interface Promotion {
-  id: number
+  id: string
   title: string
 }
 
@@ -212,7 +212,7 @@ export default function CarsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteCar = async (id: number) => {
+  const handleDeleteCar = async (id: string) => {
     try {
       await deleteCar(id)
       setCars(cars.filter((car) => car.id !== id))
@@ -230,7 +230,7 @@ export default function CarsManagement() {
             <Button
               onClick={() => {
                 setCurrentCar({
-                  id: 0,
+                  id: '',
                   external_id: 0,
                   unique_id: "",
                   offer_type: "",

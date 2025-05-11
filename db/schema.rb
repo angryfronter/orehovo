@@ -13,18 +13,19 @@
 ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pgcrypto"
 
-  create_table "active_storage_attachments", force: :cascade do |t|
+  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
-    t.bigint "record_id", null: false
-    t.bigint "blob_id", null: false
+    t.uuid "record_id", null: false
+    t.uuid "blob_id", null: false
     t.datetime "created_at", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", force: :cascade do |t|
+  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -36,13 +37,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", force: :cascade do |t|
-    t.bigint "blob_id", null: false
+  create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "cars", force: :cascade do |t|
+  create_table "cars", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "external_id"
     t.string "unique_id"
     t.jsonb "offer_type", default: {}
@@ -105,7 +106,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
     t.index ["promotion_id"], name: "index_cars_promotions_on_promotion_id"
   end
 
-  create_table "contacts", force: :cascade do |t|
+  create_table "contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "address"
     t.string "phone"
     t.string "email"
@@ -119,7 +120,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "credit_programs", force: :cascade do |t|
+  create_table "credit_programs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.decimal "interest_rate", precision: 5, scale: 2
@@ -134,7 +135,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "events", force: :cascade do |t|
+  create_table "events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.text "description"
     t.datetime "date"
@@ -144,7 +145,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_162516) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "promotions", force: :cascade do |t|
+  create_table "promotions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "started_at"

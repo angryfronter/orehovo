@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch"
 import { EyeOff } from "lucide-react"
 
 interface CreditProgram {
-  id: number
+  id: string
   name: string
   description: string
   interest_rate: number
@@ -102,7 +102,7 @@ export default function CreditProgramsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteProgram = async (id: number) => {
+  const handleDeleteProgram = async (id: string) => {
     try {
       await deleteCreditProgram(id)
       setCreditPrograms(creditPrograms.filter(program => program.id !== id))
@@ -121,7 +121,7 @@ export default function CreditProgramsManagement() {
             <Button
               onClick={() => {
                 setCurrentProgram({
-                  id: 0,
+                  id: '',
                   name: "",
                   description: "",
                   interest_rate: 0,

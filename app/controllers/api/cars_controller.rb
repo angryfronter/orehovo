@@ -52,7 +52,7 @@ class Api::CarsController < ApplicationController
                                 :is_metallic, :description, :note, offer_type: {}, generation: {},
                                 body_type: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
                                 color: {}, wheel: {}, owners: {}, state: {}, passport: {}, specifications: [], equipment: {},
-                                equipment_groups: {}, tags: [], credit_program_ids: []
+                                equipment_groups: {}, tags: [], credit_program_ids: [], images: []
     )
   end
 end

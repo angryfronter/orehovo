@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { fetchEvents, createEvent, updateEvent, deleteEvent } from "@/src/utils/api"
 
 interface Event {
-  id: number
+  id: string
   name: string
   description: string
   date: string
@@ -92,7 +92,7 @@ export default function EventsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeleteEvent = async (id: number) => {
+  const handleDeleteEvent = async (id: string) => {
     try {
       await deleteEvent(id)
       setEvents(events.filter(event => event.id !== id))
@@ -111,7 +111,7 @@ export default function EventsManagement() {
             <Button
               onClick={() => {
                 setCurrentEvent({
-                  id: 0,
+                  id: '',
                   name: "",
                   description: "",
                   date: "",

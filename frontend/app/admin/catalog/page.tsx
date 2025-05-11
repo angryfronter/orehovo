@@ -10,7 +10,7 @@ import { Pencil, Trash2, Plus } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 interface Car {
-  id: number
+  id: string
   brand: string
   model: string
   year: number
@@ -60,7 +60,7 @@ const initialCars: Car[] = [
 export default function CatalogManagement() {
   const [cars, setCars] = useState<Car[]>(initialCars)
   const [newCar, setNewCar] = useState<Car>({
-    id: 0,
+    id: '',
     brand: "",
     model: "",
     year: new Date().getFullYear(),
@@ -84,7 +84,7 @@ export default function CatalogManagement() {
       setCars((prev) => [...prev, { ...newCar, id: Date.now() }])
     }
     setNewCar({
-      id: 0,
+      id: '',
       brand: "",
       model: "",
       year: new Date().getFullYear(),
@@ -102,7 +102,7 @@ export default function CatalogManagement() {
     setIsEditing(true)
   }
 
-  const handleDeleteCar = (id: number) => {
+  const handleDeleteCar = (id: string) => {
     setCars((prev) => prev.filter((car) => car.id !== id))
   }
 

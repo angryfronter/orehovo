@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch"
 import { EyeOff } from "lucide-react"
 
 interface Promotion {
-  id: number
+  id: string
   title: string
   description: string
   started_at: string
@@ -103,7 +103,7 @@ export default function PromotionsManagement() {
     setIsDialogOpen(true)
   }
 
-  const handleDeletePromotion = async (id: number) => {
+  const handleDeletePromotion = async (id: string) => {
     try {
       await deletePromotion(id)
       setPromotions(promotions.filter(promo => promo.id !== id))
@@ -122,7 +122,7 @@ export default function PromotionsManagement() {
             <Button
               onClick={() => {
                 setCurrentPromotion({
-                  id: 0,
+                  id: '',
                   title: "",
                   description: "",
                   started_at: "",

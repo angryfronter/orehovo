@@ -7,7 +7,7 @@ import { Search } from "lucide-react"
 import { fetchPromotions } from "@/src/utils/api"
 
 interface Promotion {
-  id: number
+  id: string
   title: string
   description: string
   started_at: string

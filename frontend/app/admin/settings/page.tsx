@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/tabs"
 
 interface Contact {
-  id: number
+  id: string
   address: string
   phone: string
   email: string

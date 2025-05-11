@@ -23,7 +23,7 @@ export async function createPromotion(promotion: Omit<Promotion, "id">): Promise
   return data.promotion
 }
 
-export async function updatePromotion(id: number, promotion: Promotion): Promise<Promotion> {
+export async function updatePromotion(id: string, promotion: Promotion): Promise<Promotion> {
   const response = await fetch(`${API_URL}/api/promotions/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -36,7 +36,7 @@ export async function updatePromotion(id: number, promotion: Promotion): Promise
   return data.promotion
 }
 
-export async function deletePromotion(id: number): Promise<void> {
+export async function deletePromotion(id: string): Promise<void> {
   const response = await fetch(`${API_URL}/api/promotions/${id}`, {
     method: 'DELETE',
   })
@@ -67,7 +67,7 @@ export async function createCreditProgram(credit_program: Omit<CreditProgram, "i
   return data.credit_program
 }
 
-export async function updateCreditProgram(id: number, credit_program: CreditProgram): Promise<CreditProgram> {
+export async function updateCreditProgram(id: string, credit_program: CreditProgram): Promise<CreditProgram> {
   const response = await fetch(`${API_URL}/api/credit_programs/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -80,7 +80,7 @@ export async function updateCreditProgram(id: number, credit_program: CreditProg
   return data.credit_program
 }
 
-export async function deleteCreditProgram(id: number): Promise<void> {
+export async function deleteCreditProgram(id: string): Promise<void> {
   const response = await fetch(`${API_URL}/api/credit_programs/${id}`, {
     method: 'DELETE',
   })
@@ -106,7 +106,7 @@ export async function fetchCarById(id: string): Promise<Car> {
   return response.json()
 }
 
-export async function deleteCar(id: number): Promise<void> {
+export async function deleteCar(id: string): Promise<void> {
   const response = await fetch(`${API_URL}/api/cars/${id}`, {
     method: 'DELETE',
   })
@@ -115,7 +115,7 @@ export async function deleteCar(id: number): Promise<void> {
   }
 }
 
-export async function updateCar(id: number, car: Car): Promise<Car> {
+export async function updateCar(id: string, car: Car): Promise<Car> {
   const response = await fetch(`${API_URL}/api/cars/${id}`, {
     method: 'PUT',
     headers: {
@@ -154,7 +154,7 @@ export async function createEvent(event: Omit<Event, "id">): Promise<Event> {
   return data.event
 }
 
-export async function updateEvent(id: number, event: Event): Promise<Event> {
+export async function updateEvent(id: string, event: Event): Promise<Event> {
   const response = await fetch(`${API_URL}/api/events/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -167,7 +167,7 @@ export async function updateEvent(id: number, event: Event): Promise<Event> {
   return data.event
 }
 
-export async function deleteEvent(id: number): Promise<void> {
+export async function deleteEvent(id: string): Promise<void> {
   const response = await fetch(`${API_URL}/api/events/${id}`, {
     method: 'DELETE',
   })
@@ -186,7 +186,7 @@ export async function fetchContact(): Promise<{ contact: any }> {
   return { contact: data.contact }
 }
 
-export async function updateContact(id: number, contact: any): Promise<any> {
+export async function updateContact(id: string, contact: any): Promise<any> {
   const response = await fetch(`${API_URL}/api/contacts/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },

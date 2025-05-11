@@ -14,7 +14,7 @@ import Loading from "@/components/loading"
 import { fetchCars } from "@/src/utils/api"
 
 interface Car {
-  id: number
+  id: string
   unique_id: string
   mark: string
   model: string

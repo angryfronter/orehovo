@@ -1,6 +1,6 @@
 class CreateCars < ActiveRecord::Migration[8.0]
   def change
-    create_table :cars do |t|
+    create_table :cars, id: :uuid do |t|
       t.integer  :external_id
       t.string   :unique_id
 

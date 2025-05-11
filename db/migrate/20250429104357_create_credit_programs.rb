@@ -1,6 +1,6 @@
 class CreateCreditPrograms < ActiveRecord::Migration[8.0]
   def change
-    create_table :credit_programs do |t|
+    create_table :credit_programs, id: :uuid do |t|
       t.string :name
       t.text :description
       t.decimal :interest_rate, precision: 5, scale: 2
