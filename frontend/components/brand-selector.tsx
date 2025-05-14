@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 interface Brand {
@@ -11,34 +11,6 @@ interface Brand {
   name: string
   logo: string
 }
-
-const brands: Brand[] = [
-  { id: 'arcfox', name: 'ARCFOX', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'baic', name: 'BAIC', logo: '/1f2bce898687aed77155e749df10dbca8216f452.png' },
-  { id: 'belgee', name: 'BELGEE', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'byd', name: 'BYD', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'changan', name: 'CHANGAN', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'chery', name: 'CHERY', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'chevrolet', name: 'CHEVROLET', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'citroen', name: 'CITROEN', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'datsun', name: 'DATSUN', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'dongfeng', name: 'DONGFENG', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'exeed', name: 'EXEED', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'faw', name: 'FAW', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'forthing', name: 'FORTHING', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'gac', name: 'GAC', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'geely', name: 'GEELY', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'greatwall', name: 'GREATWALL', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'haima', name: 'HAIMA', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'haval', name: 'HAVAL', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'hongqi', name: 'HONGQI', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'hyundai', name: 'HYUNDAI', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'jac', name: 'JAC', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'jaecoo', name: 'JAECOO', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'jetour', name: 'JETOUR', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'jetta', name: 'JETTA', logo: '/placeholder.svg?height=30&width=60' },
-  { id: 'xcite', name: 'XCITE', logo: '/placeholder.svg?height=30&width=60' },
-]
 
 interface BrandSelectorProps {
   selectedBrand: string | null
@@ -48,6 +20,32 @@ interface BrandSelectorProps {
 export default function BrandSelector({ selectedBrand, onSelectBrand }: BrandSelectorProps) {
   const [scrollPosition, setScrollPosition] = useState(0)
   const scrollAmount = 200
+
+  const useBrands = () => {
+    const [brands, setBrands] = useState<Brand[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+      const fetchBrands = async () => {
+        try {
+          const res = await fetch('http://localhost:3000/api/marks')
+          const data = await res.json()
+          setBrands(data.marks)
+        } catch (err) {
+          console.error('Failed to load brands', err)
+        } finally {
+          setLoading(false)
+        }
+      }
+
+      fetchBrands()
+    }, [])
+
+    return { brands, loading }
+  }
+
+  const { brands, loading } = useBrands()
+  if (loading) return <div>Загрузка брендов...</div>
 
   const scroll = (direction: 'left' | 'right') => {
     const container = document.getElementById('brand-scroll-container')
@@ -92,7 +90,7 @@ export default function BrandSelector({ selectedBrand, onSelectBrand }: BrandSel
                 height={30}
                 className="mb-2"
               />
-              <span className="text-sm font-medium">{brand.name}</span>
+              <span className="text-sm font-medium mt-auto">{brand.name}</span>
             </button>
           ))}
         </div>

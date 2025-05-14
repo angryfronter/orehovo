@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { fetchBodyTypes, fetchGearboxes, fetchDriveTypes } from "@/src/utils/api"
 
 interface CatalogFiltersProps {
   onChange: (name: string, value: string) => void
@@ -15,6 +16,15 @@ export default function CatalogFilters({ onChange }: CatalogFiltersProps) {
   const [drive, setDrive] = useState("all")
   const [minPrice, setMinPrice] = useState("")
   const [maxPrice, setMaxPrice] = useState("")
+  const [bodyTypes, setBodyTypes] = useState<any[]>([])
+  const [gearboxes, setGearboxes] = useState<any[]>([])
+  const [driveTypes, setDriveTypes] = useState<any[]>([])
+
+  useEffect(() => {
+    fetchBodyTypes().then((res) => setBodyTypes(res.body_types))
+    fetchGearboxes().then((res) => setGearboxes(res.gearboxes))
+    fetchDriveTypes().then((res) => setDriveTypes(res.drive_types))
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,11 +45,9 @@ export default function CatalogFilters({ onChange }: CatalogFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Все</SelectItem>
-            <SelectItem value="sedan">Седан</SelectItem>
-            <SelectItem value="hatchback">Хэтчбек</SelectItem>
-            <SelectItem value="wagon">Универсал</SelectItem>
-            <SelectItem value="crossover">Кроссовер</SelectItem>
-            <SelectItem value="suv">Внедорожник</SelectItem>
+            {bodyTypes.map((type) => (
+              <SelectItem key={type.id} value={type.name}>{type.name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -51,10 +59,9 @@ export default function CatalogFilters({ onChange }: CatalogFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Все</SelectItem>
-            <SelectItem value="automatic">Автомат</SelectItem>
-            <SelectItem value="manual">Механическая</SelectItem>
-            <SelectItem value="cvt">Вариатор</SelectItem>
-            <SelectItem value="robot">Робот</SelectItem>
+            {gearboxes.map((type) => (
+              <SelectItem key={type.id} value={type.name}>{type.name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -66,9 +73,9 @@ export default function CatalogFilters({ onChange }: CatalogFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Все</SelectItem>
-            <SelectItem value="fwd">Передний</SelectItem>
-            <SelectItem value="rwd">Задний</SelectItem>
-            <SelectItem value="awd">Полный</SelectItem>
+            {driveTypes.map((type) => (
+              <SelectItem key={type.id} value={type.name}>{type.name}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

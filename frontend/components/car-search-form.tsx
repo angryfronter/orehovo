@@ -31,9 +31,9 @@ export const CarSearchForm = () => {
     brand: "",
     model: "",
     maxPrice: "",
-    bodyType: "all",
-    transmission: "all",
-    drivetrain: "all",
+    bodyType: "",
+    transmission: "",
+    drivetrain: "",
   })
   const [filteredCars, setFilteredCars] = useState<Car[]>([])
   const router = useRouter()
