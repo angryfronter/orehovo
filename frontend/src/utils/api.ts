@@ -98,6 +98,30 @@ export async function fetchCars(): Promise<{ cars: any[] }> {
   return response.json()
 }
 
+export async function fetchhotCars(): Promise<{ cars: any[] }> {
+  const response = await fetch(`${API_URL}/api/cars?hot=true`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch cars")
+  }
+  return response.json()
+}
+
+export async function fetchvisibleCars(): Promise<{ cars: any[] }> {
+  const response = await fetch(`${API_URL}/api/cars?visible=true`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch cars")
+  }
+  return response.json()
+}
+
+export async function fetchhotvisibleCars(): Promise<{ cars: any[] }> {
+  const response = await fetch(`${API_URL}/api/cars?hot=true&visible=true`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch cars")
+  }
+  return response.json()
+}
+
 export async function fetchCarById(unique_id: string): Promise<Car> {
   const response = await fetch(`${API_URL}/api/cars/${unique_id}`)
   if (!response.ok) {
@@ -197,4 +221,43 @@ export async function updateContact(id: string, contact: any): Promise<any> {
 
   const data = await response.json()
   return data.contact
+}
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchMarks(): Promise<{ marks: any[] }> {
+  const response = await fetch(`${API_URL}/api/marks`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch marks")
+  }
+  return response.json()
+}
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchModels(markId?: string): Promise<{ models: any[] }> {
+  const url = `${API_URL}/api/models?mark_id=${markId}`
+  const response = await fetch(url)
+  if (!response.ok) throw new Error("Failed to fetch models")
+  return response.json()
+}
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchBodyTypes(): Promise<{ body_types: any[] }> {
+  const response = await fetch(`${API_URL}/api/body_types`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch body_types")
+  }
+  return response.json()
+}
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchGearboxes(): Promise<{ gearboxes: any[] }> {
+  const response = await fetch(`${API_URL}/api/gearboxes`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch gearboxes")
+  }
+  return response.json()
 }

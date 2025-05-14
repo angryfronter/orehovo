@@ -10,17 +10,23 @@ class CarImporterService
     data = JSON.parse(response)
 
     data["items"].first(count).each do |item|
+
+      mark = Mark.find_or_create_by!(name: item["mark"]["title"])
+      model = Model.find_or_create_by!(name: item["model"]["title"], mark: mark)
+      body_type = BodyType.find_or_create_by!(name: item["bodyType"]["title"])
+      gearbox = Gearbox.find_or_create_by!(name: item["gearbox"]["title"])
+
       car = Car.create!(
         external_id: item["id"],
         unique_id: item["uniqueId"],
         offer_type: item["offerType"],
-        mark: item["mark"],
-        model: item["model"],
+        mark: mark,
+        model: model,
         generation: item["generation"],
         modification: item["modification"],
         modification_auto_ru_xml_id: item["modificationAutoRuXmlId"],
         complectation: item["complectation"],
-        body_type: item["bodyType"],
+        body_type: body_type,
         category: item["category"],
         car_type: item.dig("type", "title"),
         section: item["section"],
@@ -30,7 +36,7 @@ class CarImporterService
         engine_power: item["enginePower"],
         engine_volume: item["engineVolume"],
         engine_type: item["engineType"],
-        gearbox: item["gearbox"],
+        gearbox: gearbox,
         drive_type: item["driveType"],
         color: item["color"],
         is_metallic: item["isMetallic"],

@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  Model: MyString
+  BodyType: MyString
+  Gearbox: MyString
+
+two:
+  Model: MyString
+  BodyType: MyString
+  Gearbox: MyString

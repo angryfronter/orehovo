@@ -22,6 +22,14 @@ Rails.application.routes.draw do
 
     resources :contacts, only: [:index, :show, :create, :destroy, :update]
 
+    resources :marks, only: [:index, :show, :create, :destroy, :update]
+
+    resources :models, only: [:index, :show, :create, :destroy, :update]
+
+    resources :body_types, only: [:index, :show, :create, :destroy, :update]
+
+    resources :gearboxes, only: [:index, :show, :create, :destroy, :update]
+
     get "analytics", to: "analytics#index"
   end
 end

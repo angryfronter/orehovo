@@ -4,6 +4,9 @@ class Api::CarsController < ApplicationController
   def index
     cars = Car.all
 
+    cars = cars.is_hot_offer.limit(3) if params[:hot] == 'true'
+    cars = cars.visible if params[:visible] == 'true'
+
     render json: json_presented(cars, 'cars', 'main')
   end
 

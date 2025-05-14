@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { cars, type Car } from "@/data/cars"
 import { Search } from "lucide-react"
+import { fetchMarks, fetchModels, fetchBodyTypes, fetchGearboxes } from "@/src/utils/api"
+
 
 type FilterOptions = {
   brand: string
@@ -21,6 +23,11 @@ type FilterOptions = {
 }
 
 export const CarSearchForm = () => {
+  const [marks, setMarks] = useState<any[]>([])
+  const [models, setModels] = useState<any[]>([])
+  const [body_types, setBodyTypes] = useState<any[]>([])
+  const [gearboxes, setGearboxes] = useState<any[]>([])
+
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     brand: "",
     model: "",
@@ -40,6 +47,27 @@ export const CarSearchForm = () => {
     if (!filterOptions.brand) return []
     return Array.from(new Set(cars.filter((car) => car.brand === filterOptions.brand).map((car) => car.model)))
   }, [filterOptions.brand])
+
+  useEffect(() => {
+    fetchMarks().then((res) => setMarks(res.marks))
+    fetchBodyTypes().then((res) => setBodyTypes(res.body_types))
+    fetchGearboxes().then((res) => setGearboxes(res.gearboxes))
+  }, [])
+
+  useEffect(() => {
+    if (!filterOptions.brand) {
+      setModels([])
+      return
+    }
+
+    const selectedMark = marks.find((m) => m.name === filterOptions.brand)
+    if (selectedMark) {
+      fetchModels(selectedMark.id).then((res) => setModels(res.models))
+    }
+
+    const selectedBodyType = body_types.find((b) => b.name === filterOptions.bodyType)
+    const selectedGearbox = gearboxes.find((g) => g.name === filterOptions.transmission)
+  }, [filterOptions.brand, marks])
 
   const handleInputChange = useCallback((name: keyof FilterOptions, value: string) => {
     setFilterOptions((prev) => ({ ...prev, [name]: value }))
@@ -90,10 +118,8 @@ export const CarSearchForm = () => {
                     <SelectValue placeholder="Марка" />
                   </SelectTrigger>
                   <SelectContent>
-                    {uniqueBrands.map((brand) => (
-                      <SelectItem key={brand} value={brand}>
-                        {brand}
-                      </SelectItem>
+                    {marks.map((mark) => (
+                      <SelectItem key={mark.id} value={mark.name}>{mark.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -102,10 +128,8 @@ export const CarSearchForm = () => {
                     <SelectValue placeholder="Модель" />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableModels.map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
-                      </SelectItem>
+                    {models.map((model) => (
+                      <SelectItem key={model.id} value={model.name}>{model.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -124,10 +148,8 @@ export const CarSearchForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Все</SelectItem>
-                    {uniqueBodyTypes.map((type) => (
-                      <SelectItem key={type} value={type.toLowerCase()}>
-                        {type}
-                      </SelectItem>
+                    {body_types.map((body_type) => (
+                      <SelectItem key={body_type.id} value={body_type.name}>{body_type.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -140,10 +162,8 @@ export const CarSearchForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Все</SelectItem>
-                    {uniqueTransmissions.map((transmission) => (
-                      <SelectItem key={transmission} value={transmission.toLowerCase()}>
-                        {transmission}
-                      </SelectItem>
+                    {gearboxes.map((gearbox) => (
+                      <SelectItem key={gearbox.id} value={gearbox.name}>{gearbox.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
