@@ -40,6 +40,7 @@ gem 'trailblazer-rails'
 
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
+gem "google-analytics-data", git: "https://github.com/googleapis/google-cloud-ruby", glob: "google-analytics-data/*.gemspec"
 
 gem 'byebug'
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]

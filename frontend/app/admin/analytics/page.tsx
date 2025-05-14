@@ -6,20 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-
-const data = [
-  { name: "1 Июн", visitors: 4000, sales: 2400 },
-  { name: "8 Июн", visitors: 3000, sales: 1398 },
-  { name: "15 Июн", visitors: 2000, sales: 9800 },
-  { name: "22 Июн", visitors: 2780, sales: 3908 },
-  { name: "29 Июн", visitors: 1890, sales: 4800 },
-  { name: "6 Июл", visitors: 2390, sales: 3800 },
-  { name: "13 Июл", visitors: 3490, sales: 4300 },
-]
+import { useGaAnalytics } from "@/hooks/useGaAnalytics"
 
 export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date("2023-06-01"))
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date("2023-07-13"))
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date("2025-05-13"))
+  const startDateStr = startDate?.toISOString().split("T")[0] || ""
+  const endDateStr = endDate?.toISOString().split("T")[0] || ""
+  const { pageviews, traffic_sources, realtime_data, daily_visitors, loading } = useGaAnalytics(startDateStr, endDateStr)
 
   return (
     <div className="space-y-6">
@@ -66,8 +60,12 @@ export default function AnalyticsPage() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">23,543</div>
-            <p className="text-xs text-muted-foreground">+12.5% с прошлого месяца</p>
+            <div className="text-2xl font-bold">
+              {loading
+                ? "Загрузка..."
+                : daily_visitors.reduce((acc, cur) => acc + cur.visitors, 0).toLocaleString("ru-RU")}
+            </div>
+            {/* <p className="text-xs text-muted-foreground">+12.5% с прошлого месяца</p> */}
           </CardContent>
         </Card>
         <Card>
@@ -137,6 +135,65 @@ export default function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">+0.1% с прошлого месяца</p>
           </CardContent>
         </Card>
+
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Просмотры страниц</CardTitle>
+          </CardHeader>
+          <CardContent>
+          {loading ? (
+              <div className="text-sm text-muted-foreground">Загрузка...</div>
+            ) : (
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {pageviews.map((p) => (
+                  <li key={p.page}>
+                    <span>{p.page}</span>: {p.views}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Источники трафика</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="text-sm text-muted-foreground">Загрузка...</div>
+            ) : (
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {traffic_sources.map((s) => (
+                  <li key={s.source}>
+                    <span>{s.source}</span>: {s.sessions}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Кол-во онлайн посетителей</CardTitle>
+          </CardHeader>
+          <CardContent>
+          {loading ? (
+              <div className="text-sm text-muted-foreground">Загрузка...</div>
+            ) : (
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {realtime_data.map((s) => (
+                  <li key={s.source}>
+                    <span>{s.screen}</span>: {s.active_users}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="visitors" className="space-y-4">
@@ -150,20 +207,27 @@ export default function AnalyticsPage() {
               <CardTitle>Посетители</CardTitle>
             </CardHeader>
             <CardContent className="pl-2">
-              <ResponsiveContainer width="100%" height={350}>
-                <LineChart data={data}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="visitors" stroke="#8884d8" activeDot={{ r: 8 }} />
-                </LineChart>
-              </ResponsiveContainer>
+              {loading ? (
+                <div className="text-sm text-muted-foreground px-4 py-10">Загрузка графика...</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={350}>
+                  <LineChart data={daily_visitors.map(d => ({
+                    name: new Date(d.date).toLocaleDateString("ru-RU", { day: "2-digit", month: "short" }),
+                    visitors: d.visitors
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="visitors" stroke="#8884d8" activeDot={{ r: 8 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
-        <TabsContent value="sales" className="space-y-4">
+        {/* <TabsContent value="sales" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Продажи</CardTitle>
@@ -181,7 +245,7 @@ export default function AnalyticsPage() {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   )

@@ -4,7 +4,10 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import "./globals.css"
 import { cn } from "@/lib/utils"
-import type React from "react" // Added import for React
+import Script from "next/script"
+import type React from "react"
+import { GA_MEASUREMENT_ID } from "@/lib/gtag"
+import { Analytics } from "@/app/analytics"
 
 const inter = Inter({ subsets: ["latin", "cyrillic"] })
 
@@ -15,13 +18,25 @@ export const metadata: Metadata = {
   themeColor: "#ffffff",
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" className="scroll-smooth">
+      <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
+      </head>
       <body
         className={cn(
           inter.className,
@@ -30,10 +45,12 @@ export default function RootLayout({
         )}
       >
         <Header />
-        <main className="flex-grow pt-16 md:pt-20">{children}</main>
+        <main className="flex-grow pt-16 md:pt-20">
+          <Analytics />
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
   )
 }
-
