@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Car, CreditCard, LayoutDashboard, Megaphone, FileText } from "lucide-react"
+import { Car, CreditCard, LayoutDashboard, Megaphone, FileText, Settings, BarChart, CalendarDays } from "lucide-react"
 import type React from "react"
 
 export default function AdminLayout({
@@ -34,6 +34,24 @@ export default function AdminLayout({
             <Button variant="ghost" className="w-full justify-start">
               <CreditCard className="mr-2 h-4 w-4" />
               Кредитные программы
+            </Button>
+          </Link>
+          <Link href="/admin/settings">
+            <Button variant="ghost" className="w-full justify-start">
+              <Settings className="mr-2 h-4 w-4" />
+              Настройки
+            </Button>
+          </Link>
+          <Link href="/admin/analytics">
+            <Button variant="ghost" className="w-full justify-start">
+              <BarChart className="mr-2 h-4 w-4" />
+              Аналитика
+            </Button>
+          </Link>
+          <Link href="/admin/events">
+            <Button variant="ghost" className="w-full justify-start">
+              <CalendarDays className="mr-2 h-4 w-4" />
+              События
             </Button>
           </Link>
           {/* <Link href="/admin/content">
