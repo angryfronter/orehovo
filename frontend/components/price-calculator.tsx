@@ -95,8 +95,8 @@ export function PriceCalculator({ basePrice, onTestDrive, onPurchase }: PriceCal
 
         <div className="space-y-2">
           <div className="flex items-baseline gap-4">
-            <span className="text-3xl font-bold">{finalPrice.toLocaleString()} ₽</span>
-            <span className="text-xl text-muted-foreground">{monthlyPayment.toLocaleString()} ₽/мес.</span>
+            <span className="text-3xl font-bold">{finalPrice?.toLocaleString?.() ?? "—"} ₽</span>
+            <span className="text-xl text-muted-foreground">{monthlyPayment?.toLocaleString?.() ?? "—"} ₽/мес.</span>
           </div>
         </div>
 

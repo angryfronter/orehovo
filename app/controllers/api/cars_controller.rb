@@ -40,7 +40,7 @@ class Api::CarsController < ApplicationController
   private
 
   def set_car
-    @car = Car.find_by(id: params[:id])
+    @car = Car.find_by(unique_id: params[:id])
 
     return render_not_found_error unless @car
   end

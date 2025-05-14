@@ -1,27 +1,42 @@
-import { fetchCars } from "@/src/utils/api"
+"use client"
+
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+import { fetchCarById } from "@/src/utils/api"
 import CarModelPage from "@/components/car-model-page"
+import Loading from "@/components/loading"
 
-interface Props {
-  params: { brand: string; model: string }
-}
+export default function CarPage() {
+  const params = useParams()
+  const { unique_id } = params as { unique_id: string }
 
-export default async function CarPage({ params }: Props) {
-const { cars } = await fetchCars()
+  const [car, setCar] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-const normalizedBrand = params.brand.toLowerCase()
-const normalizedModel = params.model.toLowerCase().replace(/%20/g, " ")
+  useEffect(() => {
+    const fetchCar = async () => {
+      try {
+        const data = await fetchCarById(unique_id)
+        setCar(data.car)
+      } catch (error) {
+        console.error("Failed to fetch car:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-const car = cars.find(
-  (c) =>
-  typeof c.mark === "string" &&
-  typeof c.model === "string" &&
-  c.mark.toLowerCase() === normalizedBrand &&
-  c.model.toLowerCase() === normalizedModel
-)
+    if (unique_id) {
+      fetchCar()
+    }
+  }, [unique_id])
 
-if (!car) {
-  return <div>Car not found</div>
-}
+  if (loading) {
+    return <Loading />
+  }
+
+  if (!car) {
+    return <div>Car not found</div>
+  }
 
   return (
     <CarModelPage
@@ -47,15 +62,13 @@ if (!car) {
         "Дорожный просвет": `${car.dimensions?.groundClearance || ""} мм`,
       }}
       features={{
-      comfort: car.features?.comfort || [],
-      safety: car.features?.safety || [],
-      multimedia: car.features?.multimedia || [],
+        comfort: car.features?.comfort || [],
+        safety: car.features?.safety || [],
+        multimedia: car.features?.multimedia || [],
       }}
       configurations={car.configurations || []}
       colors={car.colors || []}
-      otherModels={cars.filter(
-      (c) => c.mark === car.mark && c.model !== car.model
-      )}
+      otherModels={car.otherModels || []}
     />
   )
 }

@@ -143,7 +143,7 @@ export default function CatalogPage() {
                     </CardContent>
                     <CardFooter className="p-4 pt-0">
                       <Link
-                        href={`/catalog/${car.mark?.toLowerCase() ?? 'defaultMark'}/${car.model?.toLowerCase() ?? 'defaultModel'}`}
+                        href={`/catalog/${car.mark?.toLowerCase() ?? 'defaultMark'}/${car.model?.toLowerCase() ?? 'defaultModel'}/${car.unique_id}`}
                         className="w-full"
                       >
                         <Button variant="outline" className="w-full">

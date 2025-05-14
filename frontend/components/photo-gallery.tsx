@@ -17,7 +17,10 @@ export default function PhotoGallery({ images, brand, model }: PhotoGalleryProps
   const [isOpen, setIsOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
-  const allImages = useMemo(() => Object.values(images).flat(), [images])
+  const allImages = useMemo(() => {
+    if (!images || typeof images !== "object") return []
+    return Object.values(images).flat()
+  }, [images])
 
   const handlePrevious = useCallback(() => {
     setCurrentImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1))

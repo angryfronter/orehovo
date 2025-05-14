@@ -64,7 +64,7 @@ export default function CarModelPage({
         <div>
           <div className="relative aspect-video mb-4">
             <Image
-              src={images[0] || "/placeholder.svg"}
+              src={(images?.[0]) || "/placeholder.svg"}
               alt={`${brand} ${model}`}
               layout="fill"
               objectFit="contain"

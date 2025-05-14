@@ -98,8 +98,8 @@ export async function fetchCars(): Promise<{ cars: any[] }> {
   return response.json()
 }
 
-export async function fetchCarById(id: string): Promise<Car> {
-  const response = await fetch(`${API_URL}/api/cars/${id}`)
+export async function fetchCarById(unique_id: string): Promise<Car> {
+  const response = await fetch(`${API_URL}/api/cars/${unique_id}`)
   if (!response.ok) {
     throw new Error("Failed to fetch car")
   }

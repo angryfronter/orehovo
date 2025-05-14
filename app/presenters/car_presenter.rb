@@ -1,5 +1,5 @@
 class CarPresenter < ApplicationPresenter
-  MODEL_ATTRIBUTES = %i[id price year run vin description note is_active visible is_hot_offer mark model generation modification complectation color body_type
+  MODEL_ATTRIBUTES = %i[id unique_id price year run vin description note is_active visible is_hot_offer mark model generation modification complectation color body_type
                         engine_power engine_volume engine_type gearbox drive_type car_type].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
@@ -8,6 +8,7 @@ class CarPresenter < ApplicationPresenter
   def main
     {
       id:,
+      unique_id:,
       mark: mark&.[]('title'),
       model: model&.[]('title'),
       generation: generation['title'],
