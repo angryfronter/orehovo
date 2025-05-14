@@ -7,6 +7,13 @@ class Api::CarsController < ApplicationController
     cars = cars.is_hot_offer.limit(3) if params[:hot] == 'true'
     cars = cars.visible if params[:visible] == 'true'
 
+    cars = cars.where("mark->>'name' = ?", params[:brand]) if params[:brand].present?
+    cars = cars.where("model->>'name' = ?", params[:model]) if params[:model].present?
+    cars = cars.where('price <= ?', params[:max_price].to_i) if params[:max_price].present?
+    cars = cars.where("body_type->>'name' = ?", params[:body_type]) if params[:body_type].present? && params[:body_type] != "all"
+    cars = cars.where("gearbox->>'name' = ?", params[:transmission]) if params[:transmission].present? && params[:transmission] != "all"
+    cars = cars.where("drive_type->>'name' = ?", params[:drive_type]) if params[:drive_type].present? && params[:drive_type] != "all"
+
     render json: json_presented(cars, 'cars', 'main')
   end
 

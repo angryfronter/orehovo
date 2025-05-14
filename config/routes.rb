@@ -28,6 +28,8 @@ Rails.application.routes.draw do
 
     resources :body_types, only: [:index, :show, :create, :destroy, :update]
 
+    resources :drive_types, only: [:index, :show, :create, :destroy, :update]
+
     resources :gearboxes, only: [:index, :show, :create, :destroy, :update]
 
     get "analytics", to: "analytics#index"

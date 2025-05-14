@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_091724) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_114205) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -137,6 +137,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_091724) do
     t.decimal "max_amount", precision: 15, scale: 2
     t.datetime "started_at"
     t.datetime "finished_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "drive_types", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

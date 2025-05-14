@@ -15,6 +15,7 @@ class CarImporterService
       model = Model.find_or_create_by!(name: item["model"]["title"], mark: mark)
       body_type = BodyType.find_or_create_by!(name: item["bodyType"]["title"])
       gearbox = Gearbox.find_or_create_by!(name: item["gearbox"]["title"])
+      drive_type = DriveType.find_or_create_by!(name: item["driveType"]["title"])
 
       car = Car.create!(
         external_id: item["id"],
@@ -37,7 +38,7 @@ class CarImporterService
         engine_volume: item["engineVolume"],
         engine_type: item["engineType"],
         gearbox: gearbox,
-        drive_type: item["driveType"],
+        drive_type: drive_type,
         color: item["color"],
         is_metallic: item["isMetallic"],
         wheel: item["wheel"],

@@ -261,3 +261,37 @@ export async function fetchGearboxes(): Promise<{ gearboxes: any[] }> {
   }
   return response.json()
 }
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchDriveTypes(): Promise<{ drive_types: any[] }> {
+  const response = await fetch(`${API_URL}/api/drive_types`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch drive_types")
+  }
+  return response.json()
+}
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchFilteredCars(filters: {
+  brand?: string
+  model?: string
+  max_price?: string
+  body_type?: string
+  transmission?: string
+  drivetrain?: string
+}): Promise<{ cars: any[] }> {
+  const params = new URLSearchParams()
+
+  if (filters.brand) params.append("brand", filters.brand)
+  if (filters.model) params.append("model", filters.model)
+  if (filters.max_price) params.append("max_price", filters.max_price)
+  if (filters.body_type && filters.body_type !== "all") params.append("body_type", filters.body_type)
+  if (filters.transmission && filters.transmission !== "all") params.append("transmission", filters.transmission)
+  if (filters.drivetrain && filters.drivetrain !== "all") params.append("drive_type", filters.drivetrain)
+
+  const response = await fetch(`${API_URL}/api/cars?${params.toString()}`)
+  if (!response.ok) throw new Error("Failed to fetch cars")
+  return response.json()
+}

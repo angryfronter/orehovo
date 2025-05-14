@@ -8,10 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { cars, type Car } from "@/data/cars"
 import { Search } from "lucide-react"
-import { fetchMarks, fetchModels, fetchBodyTypes, fetchGearboxes } from "@/src/utils/api"
-
+import { fetchMarks, fetchModels, fetchBodyTypes, fetchGearboxes, fetchFilteredCars, fetchDriveTypes } from "@/src/utils/api"
 
 type FilterOptions = {
   brand: string
@@ -26,6 +24,7 @@ export const CarSearchForm = () => {
   const [marks, setMarks] = useState<any[]>([])
   const [models, setModels] = useState<any[]>([])
   const [body_types, setBodyTypes] = useState<any[]>([])
+  const [drive_types, setDriveTypes] = useState<any[]>([])
   const [gearboxes, setGearboxes] = useState<any[]>([])
 
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
@@ -39,18 +38,10 @@ export const CarSearchForm = () => {
   const [filteredCars, setFilteredCars] = useState<Car[]>([])
   const router = useRouter()
 
-  const uniqueBrands = useMemo(() => Array.from(new Set(cars.map((car) => car.brand))), [])
-  const uniqueBodyTypes = useMemo(() => Array.from(new Set(cars.map((car) => car.bodyType))), [])
-  const uniqueTransmissions = useMemo(() => Array.from(new Set(cars.map((car) => car.transmission))), [])
-
-  const availableModels = useMemo(() => {
-    if (!filterOptions.brand) return []
-    return Array.from(new Set(cars.filter((car) => car.brand === filterOptions.brand).map((car) => car.model)))
-  }, [filterOptions.brand])
-
   useEffect(() => {
     fetchMarks().then((res) => setMarks(res.marks))
     fetchBodyTypes().then((res) => setBodyTypes(res.body_types))
+    fetchDriveTypes().then((res) => setDriveTypes(res.drive_types))
     fetchGearboxes().then((res) => setGearboxes(res.gearboxes))
   }, [])
 
@@ -67,6 +58,7 @@ export const CarSearchForm = () => {
 
     const selectedBodyType = body_types.find((b) => b.name === filterOptions.bodyType)
     const selectedGearbox = gearboxes.find((g) => g.name === filterOptions.transmission)
+    const selectedDriveType = drive_types.find((d) => d.name === filterOptions.drivetrain)
   }, [filterOptions.brand, marks])
 
   const handleInputChange = useCallback((name: keyof FilterOptions, value: string) => {
@@ -77,27 +69,23 @@ export const CarSearchForm = () => {
   }, [])
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault()
-      const filtered = cars.filter((car) => {
-        if (filterOptions.brand && car.brand !== filterOptions.brand) return false
-        if (filterOptions.model && car.model !== filterOptions.model) return false
-        if (filterOptions.maxPrice && car.price > Number(filterOptions.maxPrice)) return false
-        if (filterOptions.bodyType !== "all" && car.bodyType.toLowerCase() !== filterOptions.bodyType.toLowerCase())
-          return false
-        if (
-          filterOptions.transmission !== "all" &&
-          car.transmission.toLowerCase() !== filterOptions.transmission.toLowerCase()
-        )
-          return false
-        if (
-          filterOptions.drivetrain !== "all" &&
-          car.drivetrain.toLowerCase() !== filterOptions.drivetrain.toLowerCase()
-        )
-          return false
-        return true
-      })
-      setFilteredCars(filtered)
+
+      try {
+        const result = await fetchFilteredCars({
+          brand: filterOptions.brand,
+          model: filterOptions.model,
+          max_price: filterOptions.maxPrice,
+          body_type: filterOptions.bodyType,
+          transmission: filterOptions.transmission,
+          drivetrain: filterOptions.drivetrain,
+        })
+
+        setFilteredCars(result.cars)
+      } catch (error) {
+        console.error("Ошибка при поиске машин", error)
+      }
     },
     [filterOptions],
   )
@@ -176,9 +164,9 @@ export const CarSearchForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Все</SelectItem>
-                    <SelectItem value="fwd">Передний</SelectItem>
-                    <SelectItem value="rwd">Задний</SelectItem>
-                    <SelectItem value="awd">Полный</SelectItem>
+                    {drive_types.map((drive_type) => (
+                      <SelectItem key={drive_type.id} value={drive_type.name}>{drive_type.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -197,16 +185,16 @@ export const CarSearchForm = () => {
                 <Card key={car.id} className="flex flex-col h-full">
                   <CardHeader className="p-0">
                     <Image
-                      src={car.image || "/placeholder.svg"}
-                      alt={`${car.brand} ${car.model}`}
+                      src={car.images[0] || "/placeholder.svg"}
+                      alt={`${car.mark} ${car.model}`}
                       width={300}
                       height={200}
-                      className="w-full h-48 object-cover rounded-t-lg"
+                      className="w-full h-49 object-cover rounded-t-lg"
                     />
                   </CardHeader>
                   <CardContent className="flex-grow p-4">
                     <CardTitle className="text-lg font-semibold mb-2">
-                      {car.brand} {car.model}
+                      {car.mark} {car.model}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground mb-2">Год: {car.year}</p>
                     <p className="font-bold text-lg mb-1">от {car.price.toLocaleString()} ₽</p>
@@ -215,7 +203,7 @@ export const CarSearchForm = () => {
                     </p>
                   </CardContent>
                   <CardFooter className="p-4 pt-0">
-                    <Link href={`/catalog/${car.brand.toLowerCase()}/${car.model.toLowerCase()}`} className="w-full">
+                    <Link href={`/catalog/${car.mark?.toLowerCase() ?? 'defaultMark'}/${car.model?.toLowerCase() ?? 'defaultModel'}/${car.unique_id}`} className="w-full">
                       <Button variant="outline" className="w-full">
                         Подробнее
                       </Button>
