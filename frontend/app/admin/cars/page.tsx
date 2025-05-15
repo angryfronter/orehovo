@@ -323,36 +323,12 @@ export default function CarsManagement() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="generation">Генерация</Label>
-                    <Input
-                      id="generation"
-                      value={currentCar?.generation?.title || ""}
-                      onChange={(e) =>
-                        setCurrentCar((prev) =>
-                          prev ? { ...prev, generation: { ...prev.generation, title: e.target.value } } : prev
-                        )
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="modification">Модификация</Label>
                     <Input id="modification" value={currentCar?.modification || ""} onChange={(e) => handleInputChange(e, "modification")} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="year">Год</Label>
-                    <Input id="year" value={currentCar?.year || ""} onChange={(e) => handleInputChange(e, "year")} />
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="price">Цена</Label>
                     <Input id="price" value={currentCar?.price || ""} onChange={(e) => handleInputChange(e, "price")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="body_type">Тип кузова</Label>
-                    <Input id="body_type" value={currentCar?.body_type || ""} onChange={(e) => handleInputChange(e, "body_type")} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="run">Пробег</Label>
-                    <Input id="run" value={currentCar?.run || ""} onChange={(e) => handleInputChange(e, "run")} />
                   </div>
                   <div className="flex items-center space-x-2">
                     <Label htmlFor="visible">Видимость</Label>
@@ -417,10 +393,6 @@ export default function CarsManagement() {
                       </PopoverContent>
                     </Popover>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Описание</Label>
-                  <Textarea id="description" value={currentCar?.description || ""} onChange={(e) => handleInputChange(e, "description")} />
                 </div>
               </TabsContent>
               <TabsContent value="gallery" className="space-y-4">

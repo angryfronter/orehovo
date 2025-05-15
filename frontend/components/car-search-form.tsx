@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search } from "lucide-react"
 import { fetchMarks, fetchModels, fetchBodyTypes, fetchGearboxes, fetchFilteredCars, fetchDriveTypes } from "@/src/utils/api"
+import { slugify } from "@/src/utils/slugify"
 
 type FilterOptions = {
   brand: string
@@ -186,7 +187,7 @@ export const CarSearchForm = () => {
                   <CardHeader className="p-0">
                     <Image
                       src={car.images[0] || "/placeholder.svg"}
-                      alt={`${car.mark} ${car.model}`}
+                      alt={`${car.mark.name} ${car.model.name}`}
                       width={300}
                       height={200}
                       className="w-full h-49 object-cover rounded-t-lg"
@@ -194,7 +195,7 @@ export const CarSearchForm = () => {
                   </CardHeader>
                   <CardContent className="flex-grow p-4">
                     <CardTitle className="text-lg font-semibold mb-2">
-                      {car.mark} {car.model}
+                      {car.mark.name} {car.model.name}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground mb-2">Год: {car.year}</p>
                     <p className="font-bold text-lg mb-1">от {car.price.toLocaleString()} ₽</p>
@@ -203,7 +204,7 @@ export const CarSearchForm = () => {
                     </p>
                   </CardContent>
                   <CardFooter className="p-4 pt-0">
-                    <Link href={`/catalog/${car.mark?.toLowerCase() ?? 'defaultMark'}/${car.model?.toLowerCase() ?? 'defaultModel'}/${car.unique_id}`} className="w-full">
+                    <Link href={`/catalog/${slugify(car.mark?.name) ?? 'defaultMark'}/${slugify(car.model?.name) ?? 'defaultModel'}/${car.id}`} className="w-full">
                       <Button variant="outline" className="w-full">
                         Подробнее
                       </Button>

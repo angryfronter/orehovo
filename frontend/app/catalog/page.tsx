@@ -12,12 +12,13 @@ import Promotions from "@/components/promotions"
 import AssistanceForm from "@/components/assistance-form"
 import Loading from "@/components/loading"
 import { fetchCars } from "@/src/utils/api"
+import { slugify } from "@/src/utils/slugify"
 
 interface Car {
   id: string
   unique_id: string
-  mark: string
-  model: string
+  mark: {id: string, name: string}
+  model: {id: string, name: string}
   images: string[]
   price: number
 }
@@ -46,7 +47,7 @@ export default function CatalogPage() {
         const { cars }: { cars: Car[] } = await fetchCars()
 
         const filtered = cars.filter((car: Car) => {
-          if (selectedMark && car.mark  !== selectedMark ) {
+          if (selectedMark && car.mark.name  !== selectedMark ) {
             return false
           }
           // if (filters.body_type !== "all" && car.bodyType  !== filters.body_type ) {
@@ -70,10 +71,11 @@ export default function CatalogPage() {
 
         const grouped: GroupedCars = {}
         filtered.forEach((car) => {
-          if (!grouped[car.mark]) {
-            grouped[car.mark] = []
+          const markId = car.mark.id
+          if (!grouped[markId]) {
+            grouped[markId] = []
           }
-          grouped[car.mark].push(car)
+          grouped[markId].push(car)
         })
         setGroupedCars(grouped)
       } catch (error) {
@@ -118,23 +120,23 @@ export default function CatalogPage() {
         <Loading />
       ) : (
         <div className="space-y-8">
-          {Object.entries(groupedCars).map(([mark, cars]) => (
-            <div key={mark}>
-              <h2 className="text-2xl font-bold mb-4">{mark}</h2>
+          {Object.entries(groupedCars).map(([markId, cars]) => (
+            <div key={markId}>
+              <h2 className="text-2xl font-bold mb-4">{cars[0].mark.name}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cars.map((car) => (
-                  <Card key={`${car.mark}-${car.model}`} className="flex flex-col">
+                  <Card key={`${car.mark.name}-${car.model.name}`} className="flex flex-col">
                     <CardHeader className="p-0">
                       <Image
                         src={car.images?.[0] || "/placeholder.svg"}
-                        alt={`${car.mark} ${car.model}`}
+                        alt={`${car.mark.name} ${car.model.name}`}
                         width={400}
                         height={300}
                         className="w-full h-64 object-cover rounded-t-lg"
                       />
                     </CardHeader>
                     <CardContent className="flex-grow p-4">
-                      <h3 className="text-lg font-semibold mb-2">{car.model}</h3>
+                      <h3 className="text-lg font-semibold mb-2">{car.model.name}</h3>
                       <p className="text-sm text-muted-foreground mb-2">{car.availableCount} авто в наличии</p>
                       <p className="font-bold text-lg mb-1">от {car.price.toLocaleString()} ₽</p>
                       <p className="text-sm text-muted-foreground">
@@ -143,7 +145,7 @@ export default function CatalogPage() {
                     </CardContent>
                     <CardFooter className="p-4 pt-0">
                       <Link
-                        href={`/catalog/${car.mark?.toLowerCase() ?? 'defaultMark'}/${car.model?.toLowerCase() ?? 'defaultModel'}/${car.unique_id}`}
+                        href={`/catalog/${slugify(car.mark?.name) ?? 'defaultMark'}/${slugify(car.model?.name) ?? 'defaultModel'}/${car.id}`}
                         className="w-full"
                       >
                         <Button variant="outline" className="w-full">

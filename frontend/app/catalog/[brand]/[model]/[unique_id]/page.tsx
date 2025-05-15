@@ -40,8 +40,8 @@ export default function CarPage() {
 
   return (
     <CarModelPage
-      brand={car.mark}
-      model={car.model}
+      brand={car.mark.name}
+      model={car.model.name}
       price={car.price}
       discount={car.discount || 0}
       monthlyPayment={Math.round(car.price / 60)}

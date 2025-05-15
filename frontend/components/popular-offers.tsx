@@ -14,6 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Percent, Gift, CreditCard } from 'lucide-react'
 import { fetchhotvisibleCars } from '@/src/utils/api'
+import { slugify } from "@/src/utils/slugify"
 
 export default function PopularOffers() {
   const [cars, setCars] = useState<any[]>([])
@@ -83,7 +84,7 @@ export default function PopularOffers() {
                 </CardContent>
                 <CardFooter className="p-4 bg-gray-50">
                   <Link
-                    href={`/catalog/${car.mark?.toLowerCase() ?? 'defaultMark'}/${car.model?.toLowerCase() ?? 'defaultModel'}/${car.unique_id}`}
+                    href={`/catalog/${slugify(car.mark?.name) ?? 'defaultMark'}/${slugify(car.model?.name) ?? 'defaultModel'}/${car.id}`}
                     className="w-full"
                   >
                     <Button variant="outline" className="w-full">Подробнее</Button>
