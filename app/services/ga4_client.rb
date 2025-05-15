@@ -27,7 +27,7 @@ class Ga4Client
           page: row.dimension_values[0].value,
           views: row.metric_values[0].value.to_i
         }
-      end
+      end.reject { |entry| entry[:page].start_with?("/admin") }
     end
   end
 

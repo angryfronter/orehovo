@@ -10,7 +10,7 @@ import { useGaAnalytics } from "@/hooks/useGaAnalytics"
 
 export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date("2023-06-01"))
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date("2025-05-13"))
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date())
   const startDateStr = startDate?.toISOString().split("T")[0] || ""
   const endDateStr = endDate?.toISOString().split("T")[0] || ""
   const { pageviews, traffic_sources, realtime_data, daily_visitors, loading } = useGaAnalytics(startDateStr, endDateStr)
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
               <ul className="space-y-1 text-xs text-muted-foreground">
                 {realtime_data.map((s) => (
                   <li key={s.source}>
-                    <span>{s.screen}</span>: {s.active_users}
+                    {s.active_users}
                   </li>
                 ))}
               </ul>
