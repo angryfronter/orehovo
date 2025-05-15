@@ -27,9 +27,9 @@ interface Car {
   external_id: number
   unique_id: string
   offer_type: string
-  mark: string
-  model: string
-  generation: string
+  mark: {id: string, name: string}
+  model: {id: string, name: string, mark_id: string}
+  generation: {title: string}
   modification: string
   modification_auto_ru_xml_id: string
   complectation: string
@@ -66,7 +66,7 @@ interface Car {
   is_active: boolean
   visible: boolean
   is_hot_offer: boolean
-  promotions: number[]
+  promotions: string[]
   credit_programs: string[]
   gallery: string[]
 }
@@ -234,9 +234,9 @@ export default function CarsManagement() {
                   external_id: 0,
                   unique_id: "",
                   offer_type: "",
-                  mark: "",
-                  model: "",
-                  generation: "",
+                  mark: {id: "", name: ""},
+                  model: {id: "", name: "", mark_id: ""},
+                  generation: {title: ""},
                   modification: "",
                   modification_auto_ru_xml_id: "",
                   complectation: "",
@@ -300,15 +300,39 @@ export default function CarsManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="mark">Марка</Label>
-                    <Input id="mark" value={currentCar?.mark || ""} onChange={(e) => handleInputChange(e, "mark")} />
+                    <Input
+                      id="mark"
+                      value={currentCar?.mark?.name || ""}
+                      onChange={(e) =>
+                        setCurrentCar((prev) =>
+                          prev ? { ...prev, mark: { ...prev.mark, name: e.target.value } } : prev
+                        )
+                      }
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="model">Модель</Label>
-                    <Input id="model" value={currentCar?.model || ""} onChange={(e) => handleInputChange(e, "model")} />
+                    <Input
+                      id="model"
+                      value={currentCar?.model?.name || ""}
+                      onChange={(e) =>
+                        setCurrentCar((prev) =>
+                          prev ? { ...prev, model: { ...prev.model, name: e.target.value } } : prev
+                        )
+                      }
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="generation">Генерация</Label>
-                    <Input id="generation" value={currentCar?.generation || ""} onChange={(e) => handleInputChange(e, "generation")} />
+                    <Input
+                      id="generation"
+                      value={currentCar?.generation?.title || ""}
+                      onChange={(e) =>
+                        setCurrentCar((prev) =>
+                          prev ? { ...prev, generation: { ...prev.generation, title: e.target.value } } : prev
+                        )
+                      }
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="modification">Модификация</Label>
@@ -357,7 +381,7 @@ export default function CarsManagement() {
                         <Button variant="outline" className="w-full justify-between">
                           {currentCar?.promotions?.length
                             ? promotions
-                                .filter(p => currentCar.promotions.includes(Number(p.id)))
+                                .filter(p => currentCar.promotions.includes(String(p.id)))
                                 .map(p => p.title)
                                 .join(", ")
                             : "Выбрать акции"}
@@ -368,13 +392,13 @@ export default function CarsManagement() {
                         <Command>
                           <CommandList>
                             {promotions.map(promotion => {
-                              const isSelected = Array.isArray(currentCar?.promotions) && currentCar.promotions.includes(Number(promotion.id))
+                              const isSelected = Array.isArray(currentCar?.promotions) && currentCar.promotions.includes(String(promotion.id))
                               return (
                                 <CommandItem
                                   key={promotion.id}
                                   onSelect={() => {
                                     if (!currentCar) return
-                                    const promoId = Number(promotion.id)
+                                    const promoId = String(promotion.id)
                                     const updatedPromotions = isSelected
                                       ? currentCar.promotions.filter(id => id !== promoId)
                                       : [...(currentCar.promotions || []), promoId]
@@ -461,8 +485,8 @@ export default function CarsManagement() {
         <TableBody>
           {cars.map((car) => (
             <TableRow key={car.id}>
-              <TableCell>{car.mark}</TableCell>
-              <TableCell>{car.model}</TableCell>
+              <TableCell>{car.mark.name}</TableCell>
+              <TableCell>{car.model.name}</TableCell>
               <TableCell>{car.year}</TableCell>
               <TableCell>{car.price} ₽</TableCell>
               <TableCell>

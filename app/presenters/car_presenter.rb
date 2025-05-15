@@ -9,9 +9,9 @@ class CarPresenter < ApplicationPresenter
     {
       id:,
       unique_id:,
-      mark: mark&.[]('name'),
-      model: model&.[]('name'),
-      generation: generation['title'],
+      mark:,
+      model:,
+      generation:,
       modification:,
       complectation:,
       price:,

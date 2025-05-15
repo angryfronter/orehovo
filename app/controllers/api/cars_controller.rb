@@ -62,17 +62,17 @@ class Api::CarsController < ApplicationController
   private
 
   def set_car
-    @car = Car.find_by(unique_id: params[:id])
+    @car = Car.find_by(id: params[:id])
 
     return render_not_found_error unless @car
   end
 
   def car_params
-    params.require(:car).permit(:id, :mark, :model, :external_id, :unique_id, :modification, :modification_auto_ru_xml_id, :complectation,
+    params.require(:car).permit(:id, :external_id, :unique_id, :modification, :modification_auto_ru_xml_id, :complectation,
                                 :car_type, :dealer_id, :dealer_name, :dealer_description, :engine_power, :engine_power_kwh,
                                 :engine_volume, :is_active, :visible, :is_hot_offer, :year, :run, :price, :price_old, :vin,
                                 :is_metallic, :description, :note, offer_type: {}, generation: {},
-                                body_type: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
+                                body_type: {}, mark: {}, model: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
                                 color: {}, wheel: {}, owners: {}, state: {}, passport: {}, specifications: [], equipment: {},
                                 equipment_groups: {}, tags: [], credit_program_ids: [], images: []
     )
