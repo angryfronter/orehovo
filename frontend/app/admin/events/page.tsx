@@ -17,6 +17,12 @@ interface Event {
   date: string
   location: string
   event_type: "test-drive" | "presentation" | "sale"
+  participants?: Participant[]
+}
+
+interface Participant {
+  full_name: string
+  phone_number: string
 }
 
 export default function EventsManagement() {
@@ -26,6 +32,8 @@ export default function EventsManagement() {
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [isEditing, setIsEditing] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [participant, setParticipant] = useState<Participant>({ full_name: "", phone_number: "" })
+  const [participants, setParticipants] = useState<Participant[]>([])
 
   useEffect(() => {
     async function loadEvents() {
@@ -40,6 +48,7 @@ export default function EventsManagement() {
           date: event.date,
           location: event.location,
           event_type: event.event_type,
+          participants: event.participants || [],
         }))
 
         setEvents(mappedEvents)
@@ -68,17 +77,20 @@ export default function EventsManagement() {
   const handleAddEvent = async () => {
     if (!currentEvent) return
   
+    const eventWithParticipants = { ...currentEvent, participants }
+
     try {
       if (isEditing && currentEvent.id) {
-        const updated = await updateEvent(currentEvent.id, currentEvent)
+        const updated = await updateEvent(currentEvent.id, eventWithParticipants)
         setEvents(events.map(e => e.id === updated.id ? updated : e))
       } else {
-        const created = await createEvent(currentEvent)
+        const created = await createEvent(eventWithParticipants)
         setEvents([...events, created])
       }
   
       setIsDialogOpen(false)
       setCurrentEvent(null)
+      setParticipants([])
       setIsEditing(false)
     } catch (err: any) {
       console.error(err)
@@ -88,6 +100,7 @@ export default function EventsManagement() {
 
   const handleEditEvent = (event: Event) => {
     setCurrentEvent(event)
+    setParticipants(event.participants || [])
     setIsEditing(true)
     setIsDialogOpen(true)
   }
@@ -194,6 +207,74 @@ export default function EventsManagement() {
                   <option value="presentation">Презентация</option>
                   <option value="sale">Распродажа</option>
                 </select>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium">Участники</h4>
+                <div className="max-h-64 overflow-y-auto border border-gray-300 rounded">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ФИО</TableHead>
+                        <TableHead>Телефон</TableHead>
+                        <TableHead />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {participants.map((p, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>
+                            <Input
+                              value={p.full_name}
+                              onChange={(e) => {
+                                const newParticipants = [...participants]
+                                newParticipants[idx].full_name = e.target.value
+                                setParticipants(newParticipants)
+                              }}
+                              placeholder="ФИО"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              value={p.phone_number}
+                              onChange={(e) => {
+                                const newParticipants = [...participants]
+                                newParticipants[idx].phone_number = e.target.value
+                                setParticipants(newParticipants)
+                              }}
+                              placeholder="Телефон"
+                            />
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const updated = participants.filter((_, i) => i !== idx)
+                                setParticipants(updated)
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      setParticipants([...participants, { full_name: "", phone_number: "" }])
+                    }
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Добавить участника
+                  </Button>
+                </div>
               </div>
             </div>
             <Button onClick={handleAddEvent}>{isEditing ? "Сохранить изменения" : "Добавить событие"}</Button>

@@ -5,6 +5,7 @@ module Events
       property :description
       property :date
       property :location
+      property :participants, virtual: true
 
       validation do
         params do

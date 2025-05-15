@@ -1,5 +1,5 @@
 class EventPresenter < ApplicationPresenter
-  MODEL_ATTRIBUTES = %i[id name description date location event_type].freeze
+  MODEL_ATTRIBUTES = %i[id name description event_applications date location event_type].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
 
@@ -10,7 +10,8 @@ class EventPresenter < ApplicationPresenter
       description:,
       date: localize_time(date, :time_stamp),
       location:,
-      event_type:
+      event_type:,
+      participants: present_records(event_applications, :main),
     }
   end
 end

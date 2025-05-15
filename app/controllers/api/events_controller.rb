@@ -27,8 +27,15 @@ class Api::EventsController < ApplicationController
 
   def update
     event = Event.find(params[:id])
-    if event.update(event_params)
-      render json: { event: event }, status: :ok
+
+    if event.update(event_params.except(:participants))
+      event.event_applications.destroy_all
+
+      Array.wrap(event_params[:participants]).each do |participant|
+        event.event_applications.create(participant)
+      end
+
+      render json: { event: event.as_json(include: :event_applications) }, status: :ok
     else
       render json: { error: "Failed to update event" }, status: :unprocessable_entity
     end
@@ -44,7 +51,7 @@ class Api::EventsController < ApplicationController
 
   def event_params
     params.require(:event).permit(
-      :id, :name, :description, :date, :location, :event_type
+      :id, :name, :description, :date, :location, :event_type, participants: [:full_name, :phone_number]
     )
   end
 end
