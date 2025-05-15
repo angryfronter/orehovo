@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { useGaAnalytics } from "@/hooks/useGaAnalytics"
+import { useCarStats } from "@/hooks/useCarStats"
+import { usePromotionStats } from "@/hooks/usePromotionStats"
 
 export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date("2023-06-01"))
@@ -14,6 +16,20 @@ export default function AnalyticsPage() {
   const startDateStr = startDate?.toISOString().split("T")[0] || ""
   const endDateStr = endDate?.toISOString().split("T")[0] || ""
   const { pageviews, traffic_sources, realtime_data, daily_visitors, loading } = useGaAnalytics(startDateStr, endDateStr)
+  const { stats: carStats, loading: loadingCarStats } = useCarStats()
+  const { stats: promotionStats, loading: loadingPromotionStats } = usePromotionStats()
+
+  const SOURCE_LABELS: Record<string, string> = {
+    "(direct)": "Прямой заход",
+    "(not set)": "Источник не определён",
+    // можешь добавить ещё, например:
+    // "google": "Поиск Google",
+    // "facebook.com": "Facebook",
+  }
+
+  function formatSource(source: string): string {
+    return SOURCE_LABELS[source] || source
+  }
 
   return (
     <div className="space-y-6">
@@ -70,6 +86,73 @@ export default function AnalyticsPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Количество авто</CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 text-muted-foreground"
+              >
+                <path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 13v5a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5z" />
+                <circle cx="7.5" cy="17.5" r="1.5" />
+                <circle cx="16.5" cy="17.5" r="1.5" />
+              </svg>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {loadingCarStats || !carStats ? (
+              <div className="text-sm text-muted-foreground">Загрузка...</div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{carStats.total}</div>
+                <div className="text-xs text-muted-foreground">Горящие предложения: <span className="font-bold">{carStats.hot}</span></div>
+                <div className="text-xs text-muted-foreground">Активные(видимые): <span className="font-bold">{carStats.visible}</span></div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Акции</CardTitle>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 text-muted-foreground"
+              >
+                <line x1="19" y1="5" x2="5" y2="19" />
+                <circle cx="6.5" cy="6.5" r="2.5" />
+                <circle cx="17.5" cy="17.5" r="2.5" />
+              </svg>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {loadingPromotionStats || !promotionStats ? (
+              <div className="text-sm text-muted-foreground">Загрузка...</div>
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{promotionStats.total}</div>
+
+                <div className="text-xs text-muted-foreground font-bold">
+                  Активные (видимые): <span className="font-bold">{promotionStats.visible.length}</span>
+                </div>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  {promotionStats.visible.map((title: string, index: number) => (
+                    <div key={index}>{title}</div>
+                  ))}
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Продажи</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -89,7 +172,7 @@ export default function AnalyticsPage() {
             <p className="text-xs text-muted-foreground">+8.2% с прошлого месяца</p>
           </CardContent>
         </Card>
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Средний чек</CardTitle>
             <svg
@@ -110,8 +193,8 @@ export default function AnalyticsPage() {
             <div className="text-2xl font-bold">2,345,000 ₽</div>
             <p className="text-xs text-muted-foreground">+1.5% с прошлого месяца</p>
           </CardContent>
-        </Card>
-        <Card>
+        </Card> */}
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Конверсия</CardTitle>
             <svg
@@ -134,7 +217,7 @@ export default function AnalyticsPage() {
             <div className="text-2xl font-bold">1.46%</div>
             <p className="text-xs text-muted-foreground">+0.1% с прошлого месяца</p>
           </CardContent>
-        </Card>
+        </Card> */}
 
 
         <Card>
@@ -148,7 +231,7 @@ export default function AnalyticsPage() {
               <ul className="space-y-1 text-xs text-muted-foreground">
                 {pageviews.map((p) => (
                   <li key={p.page}>
-                    <span>{p.page}</span>: {p.views}
+                    <span>{p.page}</span>: <span className="font-bold">{p.views}</span>
                   </li>
                 ))}
               </ul>
@@ -168,7 +251,7 @@ export default function AnalyticsPage() {
               <ul className="space-y-1 text-xs text-muted-foreground">
                 {traffic_sources.map((s) => (
                   <li key={s.source}>
-                    <span>{s.source}</span>: {s.sessions}
+                    <span>{formatSource(s.source)}</span>: <span className="font-bold">{s.sessions}</span>
                   </li>
                 ))}
               </ul>
@@ -187,7 +270,7 @@ export default function AnalyticsPage() {
               <ul className="space-y-1 text-xs text-muted-foreground">
                 {realtime_data.map((s) => (
                   <li key={s.source}>
-                    {s.active_users}
+                    <span>{s.screen}</span>: <span className="font-bold">{s.active_users}</span>
                   </li>
                 ))}
               </ul>

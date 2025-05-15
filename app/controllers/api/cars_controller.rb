@@ -47,6 +47,18 @@ class Api::CarsController < ApplicationController
     end
   end
 
+  def stats
+    total_count = Car.count
+    hot_count = Car.is_hot_offer.count
+    visible_count = Car.visible.count
+
+    render json: {
+      total: total_count,
+      hot: hot_count,
+      visible: visible_count
+    }
+  end
+
   private
 
   def set_car

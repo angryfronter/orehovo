@@ -12,9 +12,17 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   namespace :api do
-    resources :cars, only: [:index, :show, :create, :destroy, :update]
+    resources :cars, only: [:index, :show, :create, :destroy, :update] do
+      collection do
+        get :stats
+      end
+    end
 
-    resources :promotions, only: [:index, :show, :create, :destroy, :update]
+    resources :promotions, only: [:index, :show, :create, :destroy, :update] do
+      collection do
+        get :stats
+      end
+    end
 
     resources :credit_programs, only: [:index, :show, :create, :destroy, :update]
 

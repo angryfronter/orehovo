@@ -44,6 +44,17 @@ export async function deletePromotion(id: string): Promise<void> {
   if (!response.ok) throw new Error("Failed to delete promotion")
 }
 
+export async function fetchPromotionStats(): Promise<{
+  total: number
+  visible: string[]
+}> {
+  const response = await fetch(`${API_URL}/api/promotions/stats`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch promotion stats")
+  }
+  return response.json()
+}
+
 ///////////////////////////////////////////////////////////////////
 
 export async function fetchCreditPrograms(): Promise<{ credit_programs: any[] }> {
@@ -152,6 +163,18 @@ export async function updateCar(id: string, car: Car): Promise<Car> {
     throw new Error("Failed to update car")
   }
 
+  return response.json()
+}
+
+export async function fetchCarStats(): Promise<{
+  total: number
+  hot: number
+  visible: number
+}> {
+  const response = await fetch(`${API_URL}/api/cars/stats`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch car stats")
+  }
   return response.json()
 }
 

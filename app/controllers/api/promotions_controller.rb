@@ -34,6 +34,16 @@ class Api::PromotionsController < ApplicationController
     end
   end
 
+  def stats
+    total_count = Promotion.count
+    visible = Promotion.visible.pluck(:title)
+
+    render json: {
+      total: total_count,
+      visible: visible
+    }
+  end
+
   private
 
   def set_promotion
