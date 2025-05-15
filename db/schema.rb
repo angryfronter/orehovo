@@ -99,15 +99,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_124357) do
   end
 
   create_table "cars_credit_programs", id: false, force: :cascade do |t|
-    t.bigint "car_id", null: false
-    t.bigint "credit_program_id", null: false
+    t.uuid "car_id", null: false
+    t.uuid "credit_program_id", null: false
     t.index ["car_id"], name: "index_cars_credit_programs_on_car_id"
     t.index ["credit_program_id"], name: "index_cars_credit_programs_on_credit_program_id"
   end
 
   create_table "cars_promotions", id: false, force: :cascade do |t|
-    t.bigint "car_id", null: false
-    t.bigint "promotion_id", null: false
+    t.uuid "car_id", null: false
+    t.uuid "promotion_id", null: false
     t.index ["car_id"], name: "index_cars_promotions_on_car_id"
     t.index ["promotion_id"], name: "index_cars_promotions_on_promotion_id"
   end

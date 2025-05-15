@@ -66,7 +66,7 @@ interface Car {
   is_active: boolean
   visible: boolean
   is_hot_offer: boolean
-  promotions: string[]
+  promotions: []
   credit_programs: string[]
   gallery: string[]
 }
@@ -157,6 +157,7 @@ export default function CarsManagement() {
           visible: car.visible,
           is_hot_offer: car.is_hot_offer,
           gallery: car.images.length ? car.images : [car.image],
+          promotions: car.promotions?.map((p: any) => p.id) || [],
         }))
 
         setCars(mappedCars)
@@ -190,7 +191,7 @@ export default function CarsManagement() {
       try {
         if (isEditing) {
           // Update existing car
-          await updateCar(currentCar.id, currentCar)
+          await updateCar(currentCar.id, { car: currentCar })
           setCars(cars.map((car) => (car.id === currentCar.id ? currentCar : car)))
         } else {
           // Add new car
