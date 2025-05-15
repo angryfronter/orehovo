@@ -47,27 +47,35 @@ export default function CarPage() {
       monthlyPayment={Math.round(car.price / 60)}
       images={car.images}
       specifications={{
-        Двигатель: car.engine?.type || "",
-        Мощность: `${car.engine?.power || ""} л.с.`,
-        "Крутящий момент": `${car.engine?.torque || ""} Нм`,
-        "Коробка передач": car.transmission || "",
-        Привод: car.drivetrain || "",
-        "Тип топлива": car.fuelType || "",
-        "Расход топлива": `${car.fuelTank || ""} л`,
-        "Тип кузова": car.bodyType || "",
-        Длина: `${car.dimensions?.length || ""} мм`,
-        Ширина: `${car.dimensions?.width || ""} мм`,
-        Высота: `${car.dimensions?.height || ""} мм`,
-        "Колесная база": `${car.dimensions?.wheelbase || ""} мм`,
-        "Дорожный просвет": `${car.dimensions?.groundClearance || ""} мм`,
+        Двигатель: car.engine_type || "-",
+        Мощность: `${car.engine_power || "-"} л.с.`,
+        "Крутящий момент": `${car.engine?.torque || "-"} Нм`,
+        "Коробка передач": car.gearbox || "-",
+        Привод: car.drive_type || "-",
+        "Тип топлива": car.engine_type || "-",
+        "Расход топлива": `${car.engine_volume || "-"} л`,
+        "Тип кузова": car.body_type || "-",
+        Длина: `${car.dimensions?.length || "-"} мм`,
+        Ширина: `${car.dimensions?.width || "-"} мм`,
+        Высота: `${car.dimensions?.height || "-"} мм`,
+        "Колесная база": `${car.dimensions?.wheelbase || "-"} мм`,
+        "Дорожный просвет": `${car.dimensions?.groundClearance || "-"} мм`,
       }}
       features={{
-        comfort: car.features?.comfort || [],
-        safety: car.features?.safety || [],
-        multimedia: car.features?.multimedia || [],
+        comfort: car.equipment_groups?.comfort
+          ? Object.values(car.equipment_groups.comfort.values).map((item) => item.value)
+          : [],
+        safety: car.equipment_groups?.safety
+          ? Object.values(car.equipment_groups.safety.values).map((item) => item.value)
+          : [],
+        multimedia: car.equipment_groups?.multimedia
+          ? Object.values(car.equipment_groups.multimedia.values).map((item) => item.value)
+          : [],
       }}
       configurations={car.configurations || []}
+      configuration={car.complectation || "-"}
       colors={car.colors || []}
+      color={car.color || "-"}
       otherModels={car.otherModels || []}
     />
   )

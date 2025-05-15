@@ -33,6 +33,8 @@ interface CarModelPageProps {
     name: string
     hex: string
   }>
+  color: string
+  configuration: string
   otherModels: any[]
 }
 
@@ -46,6 +48,7 @@ export default function CarModelPage({
   specifications,
   features,
   configurations,
+  configuration,
   colors,
   otherModels,
 }: CarModelPageProps) {
@@ -57,6 +60,10 @@ export default function CarModelPage({
     setSelectedColor(color)
     // setColorImages(images[color.name] || [])
   }
+
+  const configTotalSavings = 201000 // Total of all discounts
+  const configFinalPrice = price - configTotalSavings
+  const configMonthlyPayment = Math.round(configFinalPrice / 60)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -113,49 +120,32 @@ export default function CarModelPage({
           <TabsTrigger value="specifications">Характеристики</TabsTrigger>
         </TabsList>
         <TabsContent value="configurations" className="mt-6">
-          <div className="space-y-4">
-            {configurations.map((config) => {
-              const configTotalSavings = 201000 // Total of all discounts
-              const configFinalPrice = config.price - configTotalSavings
-              const configMonthlyPayment = Math.round(configFinalPrice / 60)
-
-              return (
-                <Card key={config.name} className="overflow-hidden">
-                  <CardContent className="p-0">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem value={config.name}>
-                        <AccordionTrigger className="px-4 py-2 hover:no-underline">
-                          <div className="flex justify-between items-center w-full">
-                            <span className="font-semibold">{config.name}</span>
-                            <div className="text-right">
-                              <div className="font-semibold">от {configFinalPrice.toLocaleString()} ₽</div>
-                              <div className="text-sm text-muted-foreground">
-                                {configMonthlyPayment.toLocaleString()} ₽/мес
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="px-4 py-2 bg-muted/50">
-                            <div className="mb-4">
-                              <div className="text-sm text-muted-foreground mb-1">Выгода до</div>
-                              <div className="font-semibold text-lg">{configTotalSavings.toLocaleString()} ₽</div>
-                            </div>
-                            <ul className="list-disc list-inside space-y-1">
-                              {config.features.map((feature, index) => (
-                                <li key={index}>{feature}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex justify-between items-center w-full">
+                <span className="font-semibold">{configuration}</span>
+                <div className="text-right">
+                  <div className="font-semibold">от {configFinalPrice.toLocaleString()} ₽</div>
+                  <div className="text-sm text-muted-foreground">
+                    {configMonthlyPayment.toLocaleString()} ₽/мес
+                  </div>
+                </div>
+              </div>
+              <div className="px-4 py-2 bg-muted/50">
+                <div className="mb-4">
+                  <div className="text-sm text-muted-foreground mb-1">Выгода до</div>
+                  <div className="font-semibold text-lg">{configTotalSavings.toLocaleString()} ₽</div>
+                </div>
+                <ul className="list-disc list-inside space-y-1">
+                  {[...features.comfort, ...features.safety, ...features.multimedia].map((feature, index) => (
+                    <li key={index}>{feature}</li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
+
         <TabsContent value="specifications" className="mt-6">
           <div className="grid gap-4 sm:grid-cols-2">
             {Object.entries(specifications).map(([key, value]) => (

@@ -11,7 +11,7 @@ import { useCarStats } from "@/hooks/useCarStats"
 import { usePromotionStats } from "@/hooks/usePromotionStats"
 
 export default function AnalyticsPage() {
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date("2023-06-01"))
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date())
   const [endDate, setEndDate] = useState<Date | undefined>(new Date())
   const startDateStr = startDate?.toISOString().split("T")[0] || ""
   const endDateStr = endDate?.toISOString().split("T")[0] || ""
@@ -21,10 +21,7 @@ export default function AnalyticsPage() {
 
   const SOURCE_LABELS: Record<string, string> = {
     "(direct)": "Прямой заход",
-    "(not set)": "Источник не определён",
-    // можешь добавить ещё, например:
-    // "google": "Поиск Google",
-    // "facebook.com": "Facebook",
+    "(not set)": "Источник не определён"
   }
 
   function formatSource(source: string): string {
