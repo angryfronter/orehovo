@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { fetchCars, deleteCar, updateCar, fetchPromotions } from "@/src/utils/api"
+import { fetchCars, deleteCar, updateCar, fetchPromotions, createCar } from "@/src/utils/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -199,23 +199,25 @@ export default function CarsManagement() {
   }
 
   const handleAddCar = async () => {
-    if (currentCar) {
-      try {
-        if (isEditing) {
-          await updateCar(currentCar.id, { car: currentCar })
-          setCars(cars.map((car) => (car.id === currentCar.id ? currentCar : car)))
-        } else {
-          setCars([...cars, { ...currentCar, id: Date.now() }])
-        }
-        setIsDialogOpen(false)
-        setCurrentCar(null)
-        setIsEditing(false)
-        console.log("Отправка данных на сервер:", currentCar);
-      } catch (err: any) {
-        setError(err.message || "Ошибка при сохранении автомобиля")
+    if (!currentCar) return
+  
+    try {
+      if (isEditing && currentCar.id) {
+        const updated = await updateCar(currentCar.id, currentCar)
+        setPromotions(promotions.map(p => p.id === updated.id ? updated : p))
+      } else {
+        const created = await createCar(currentCar)
+        setPromotions([...promotions, created])
       }
+  
+      setIsDialogOpen(false)
+      setCurrentCar(null)
+      setIsEditing(false)
+    } catch (err: any) {
+      console.error(err)
+      setError("Ошибка при сохранении автомобиля")
     }
-  }  
+  }
 
   const handleEditCar = (car: Car) => {
     setCurrentCar(car)
@@ -394,7 +396,7 @@ export default function CarsManagement() {
                                   className="flex items-center gap-2"
                                 >
                                   <Checkbox checked={isSelected} />
-                                  <span>{promotion.title}</span>
+                                  <span>{promotion?.title}</span>
                                   {isSelected && <Check className="ml-auto h-4 w-4 text-primary" />}
                                 </CommandItem>
                               )

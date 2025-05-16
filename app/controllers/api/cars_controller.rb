@@ -22,11 +22,18 @@ class Api::CarsController < ApplicationController
   end
 
   def create
-    result = Cars::Operations::Create.call(params: car_params)
+    @car = Car.new(car_params)
 
-    status, presenter = result.success? ? [:ok, 'main'] : [:unprocessable_content, 'data_errors']
+    if params[:car][:promotions].present?
+      promotion_ids = params[:car][:promotions].reject(&:blank?)
+      @car.promotions = Promotion.where(id: promotion_ids)
+    end
 
-    render json: json_presented(result[:model], 'car', presenter, errors: result.errors), status:
+    if @car.save
+      render json: json_presented(@car, 'car', 'main'), status: :ok
+    else
+      render json: json_presented(@car, 'car', 'data_errors', errors: @car.errors.full_messages), status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -78,7 +85,7 @@ class Api::CarsController < ApplicationController
                                 body_type: {}, mark: {}, model: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
                                 color: {}, wheel: {}, owners: {}, state: {}, passport: {}, specifications: [], equipment: {},
                                 equipment_groups: {}, tags: [], credit_program_ids: [], images: [], promotions: [], car_colors_attributes: [
-                                  :id, :name, :is_metallic, :_destroy, images: []]
+                                  :id, :name, :hex, :_destroy, images: []]
     )
   end
 end

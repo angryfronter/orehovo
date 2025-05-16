@@ -109,6 +109,19 @@ export async function fetchCars(): Promise<{ cars: any[] }> {
   return response.json()
 }
 
+export async function createCar(car: Omit<Car, "id">): Promise<Car> {
+  const response = await fetch(`${API_URL}/api/cars`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ car }),
+  })
+
+  if (!response.ok) throw new Error("Failed to create promotion")
+
+  const data = await response.json()
+  return data.promotion
+}
+
 export async function fetchhotCars(): Promise<{ cars: any[] }> {
   const response = await fetch(`${API_URL}/api/cars?hot=true`)
   if (!response.ok) {
