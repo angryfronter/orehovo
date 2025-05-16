@@ -69,6 +69,12 @@ interface Car {
   promotions: []
   credit_programs: string[]
   gallery: string[]
+  car_colors?: {
+    id: string
+    name: string
+    hex: string
+    images: string[]
+  }[]
 }
 
 interface Promotion {
@@ -158,6 +164,12 @@ export default function CarsManagement() {
           is_hot_offer: car.is_hot_offer,
           gallery: car.images.length ? car.images : [car.image],
           promotions: car.promotions?.map((p: any) => p.id) || [],
+          car_colors: car.car_colors?.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            hex: c.hex || "#000000",
+            images: c.images || []
+          })) || []
         }))
 
         setCars(mappedCars)
@@ -190,11 +202,9 @@ export default function CarsManagement() {
     if (currentCar) {
       try {
         if (isEditing) {
-          // Update existing car
           await updateCar(currentCar.id, { car: currentCar })
           setCars(cars.map((car) => (car.id === currentCar.id ? currentCar : car)))
         } else {
-          // Add new car
           setCars([...cars, { ...currentCar, id: Date.now() }])
         }
         setIsDialogOpen(false)
@@ -395,6 +405,121 @@ export default function CarsManagement() {
                     </Popover>
                   </div>
                 </div>
+              </TabsContent>
+              <TabsContent value="colors" className="space-y-4">
+                <Button
+                  onClick={() => {
+                    if (currentCar) {
+                      const updatedColors = currentCar.car_colors || []
+                      const newColor = {
+                        id: String(Date.now()),
+                        name: "",        // пустое имя цвета для заполнения
+                        hex: "#000000",  // дефолтный hex
+                        images: [],
+                      }
+                      setCurrentCar({ ...currentCar, car_colors: [...updatedColors, newColor] })
+                    }
+                  }}
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Добавить цвет
+                </Button>
+
+                {currentCar?.car_colors?.map((color, colorIndex) => (
+                  <div key={color.id} className="border p-4 rounded-md space-y-4">
+                    <div className="flex justify-between items-center gap-4">
+                      {/* Название цвета */}
+                      <div className="flex flex-col flex-1">
+                        <Label htmlFor={`color-name-${color.id}`}>Название цвета</Label>
+                        <Input
+                          id={`color-name-${color.id}`}
+                          type="text"
+                          value={color.name}
+                          onChange={(e) => {
+                            const updatedColors = [...(currentCar.car_colors || [])]
+                            updatedColors[colorIndex] = { ...updatedColors[colorIndex], name: e.target.value }
+                            setCurrentCar({ ...currentCar, car_colors: updatedColors })
+                          }}
+                          placeholder="Например, Красный"
+                        />
+                      </div>
+
+                      {/* Цвет (HEX) */}
+                      <div className="flex flex-col flex-1">
+                        <Label htmlFor={`color-hex-${color.id}`}>Цвет (HEX)</Label>
+                        <input
+                          id={`color-hex-${color.id}`}
+                          type="color"
+                          value={color.hex || "#000000"}
+                          onChange={(e) => {
+                            const updatedColors = [...(currentCar.car_colors || [])]
+                            updatedColors[colorIndex] = { ...updatedColors[colorIndex], hex: e.target.value }
+                            setCurrentCar({ ...currentCar, car_colors: updatedColors })
+                          }}
+                          className="h-10 w-20 p-0 border rounded cursor-pointer"
+                        />
+                      </div>
+
+                      {/* Кнопка удаления цвета */}
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          const updatedColors = currentCar.car_colors?.filter((_, i) => i !== colorIndex) || []
+                          setCurrentCar({ ...currentCar, car_colors: updatedColors })
+                        }}
+                      >
+                        <Trash2 className="w-5 h-5 text-red-500" />
+                      </Button>
+                    </div>
+
+                    {/* Загрузка и отображение изображений */}
+                    <div className="flex flex-col gap-2">
+                      <Label>Изображения</Label>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => {
+                          const files = e.target.files
+                          if (!files) return
+                          const newImageUrls = Array.from(files).map(file => URL.createObjectURL(file))
+                          const updatedColors = [...(currentCar.car_colors || [])]
+                          updatedColors[colorIndex] = {
+                            ...updatedColors[colorIndex],
+                            images: [...(updatedColors[colorIndex].images || []), ...newImageUrls],
+                          }
+                          setCurrentCar({ ...currentCar, car_colors: updatedColors })
+                        }}
+                      />
+                      <div className="flex gap-2 flex-wrap">
+                        {color.images?.map((img, imgIndex) => (
+                          <div key={imgIndex} className="relative">
+                            <Image
+                              src={img}
+                              alt={`Изображение цвета ${color.name}`}
+                              width={80}
+                              height={80}
+                              className="rounded-md border"
+                            />
+                            <button
+                              type="button"
+                              className="absolute top-0 right-0 bg-white text-red-500 p-0.5 rounded-full"
+                              onClick={() => {
+                                const updatedColors = [...(currentCar.car_colors || [])]
+                                updatedColors[colorIndex] = {
+                                  ...updatedColors[colorIndex],
+                                  images: updatedColors[colorIndex].images.filter((_, i) => i !== imgIndex),
+                                }
+                                setCurrentCar({ ...currentCar, car_colors: updatedColors })
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </TabsContent>
               <TabsContent value="gallery" className="space-y-4">
                 <div className="flex flex-wrap gap-2">

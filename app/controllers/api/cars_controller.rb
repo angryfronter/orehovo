@@ -77,7 +77,8 @@ class Api::CarsController < ApplicationController
                                 :is_metallic, :description, :note, offer_type: {}, generation: {},
                                 body_type: {}, mark: {}, model: {}, category: {}, section: {}, engine_type: {}, gearbox: {}, drive_type: {},
                                 color: {}, wheel: {}, owners: {}, state: {}, passport: {}, specifications: [], equipment: {},
-                                equipment_groups: {}, tags: [], credit_program_ids: [], images: [], promotions: []
+                                equipment_groups: {}, tags: [], credit_program_ids: [], images: [], promotions: [], car_colors_attributes: [
+                                  :id, :name, :is_metallic, :_destroy, images: []]
     )
   end
 end

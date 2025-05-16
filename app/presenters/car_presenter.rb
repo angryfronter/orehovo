@@ -1,6 +1,6 @@
 class CarPresenter < ApplicationPresenter
   MODEL_ATTRIBUTES = %i[id unique_id price year run vin description note is_active visible is_hot_offer mark model generation modification complectation color body_type
-                        engine_power engine_volume engine_type gearbox promotions drive_type car_type category owners equipment equipment_groups].freeze
+                        engine_power engine_volume engine_type car_colors gearbox promotions drive_type car_type category owners equipment equipment_groups].freeze
 
   delegate(*MODEL_ATTRIBUTES, to: :record)
   delegate(:images, to: :record)
@@ -36,7 +36,8 @@ class CarPresenter < ApplicationPresenter
       equipment:,
       equipment_groups:,
       images: files_urls(images, :main),
-      promotions: present_records(promotions, :main)
+      promotions: present_records(promotions, :main),
+      car_colors: present_records(car_colors, :main)
     }
   end
 end

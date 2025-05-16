@@ -84,6 +84,21 @@ module Cars
           optional(:is_hot_offer).maybe(:bool)
         end
       end
+
+      property :car_colors, populate_if_empty: CarColor do
+        collection :car_colors, populate_if_empty: CarColor do
+          property :name
+          property :hex
+          property :images
+
+          validation do
+            params do
+              optional(:name).maybe(:string)
+              optional(:hex).maybe(:string)
+            end
+          end
+        end
+      end
     end
   end
 end

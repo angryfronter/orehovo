@@ -5,6 +5,7 @@ class CarColorPresenter < ApplicationPresenter
 
   def main
     {
+      id:,
       name:,
       hex:
     }

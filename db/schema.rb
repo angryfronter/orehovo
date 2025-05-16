@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_15_124357) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_16_150840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -47,6 +47,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_124357) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "car_colors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "car_id", null: false
+    t.string "name"
+    t.string "hex"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["car_id"], name: "index_car_colors_on_car_id"
   end
 
   create_table "cars", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -198,6 +207,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_15_124357) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "car_colors", "cars"
   add_foreign_key "event_applications", "events"
   add_foreign_key "models", "marks"
 end
