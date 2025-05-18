@@ -8,7 +8,8 @@ class BankPresenter < ApplicationPresenter
     {
       id:,
       name:,
-      description:
+      description:,
+      image_url: file_url(image, :main)
     }
   end
 end

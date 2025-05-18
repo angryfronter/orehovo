@@ -14,6 +14,8 @@ interface Bank {
   id: string
   name: string
   description: string
+  image?: File | null
+  image_url?: string | null
 }
 
 export default function BanksManagement() {
@@ -32,7 +34,8 @@ export default function BanksManagement() {
         const mappedBanks = data.banks.map((bank: any) => ({
           id: bank.id,
           name: bank.name,
-          description: bank.description
+          description: bank.description,
+          image_url: bank.image_url || null
         }))
 
         setBanks(mappedBanks)
@@ -144,6 +147,33 @@ export default function BanksManagement() {
                   className="col-span-3"
                 />
               </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="image" className="text-right">
+                  Изображение
+                </Label>
+                <Input
+                  type="file"
+                  id="image"
+                  name="image"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setCurrentBank({
+                      ...currentBank!,
+                      image: e.target.files?.[0] || null
+                    })
+                  }
+                  className="col-span-3"
+                />
+                {currentBank?.image_url && (
+                  <div className="col-span-3 col-start-2">
+                    <img
+                      src={currentBank.image_url}
+                      alt="bank image"
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
             <Button onClick={handleAddBank}>{isEditing ? "Сохранить изменения" : "Добавить банк"}</Button>
           </DialogContent>
@@ -154,12 +184,20 @@ export default function BanksManagement() {
         <TableHeader>
           <TableRow>
             <TableHead>Название</TableHead>
+            <TableHead>Изображение</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {banks.map((bank) => (
             <TableRow key={bank.id}>
               <TableCell>{bank.name}</TableCell>
+              <TableCell>
+                {bank.image_url ? (
+                  <img src={bank.image_url} alt={bank.name} className="w-10 h-10 object-cover rounded" />
+                ) : (
+                  "-"
+                )}
+              </TableCell>
               <TableCell>
                 <Button variant="ghost" size="icon" onClick={() => handleEditBank(bank)}>
                   <Pencil className="h-4 w-4" />

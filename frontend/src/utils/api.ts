@@ -342,24 +342,40 @@ export async function fetchBanks(): Promise<{ banks: any[] }> {
   return response.json()
 }
 
-export async function createBank(data: { bank: any }) {
+export async function createBank(data: { bank: Bank }) {
+  const formData = new FormData()
+  Object.entries(data.bank).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(`bank[${key}]`, value)
+    }
+  })
+
   const res = await fetch(`${API_URL}/api/banks`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: formData,
   })
+
   if (!res.ok) throw new Error("Ошибка при создании банка")
-  return await res.json()
+
+  return res.json().then(data => data.bank)
 }
 
-export async function updateBank(id: string, data: { bank: any }) {
+export async function updateBank(id: string, data: { bank: Bank }) {
+  const formData = new FormData()
+  Object.entries(data.bank).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(`bank[${key}]`, value)
+    }
+  })
+
   const res = await fetch(`${API_URL}/api/banks/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    body: formData,
   })
+
   if (!res.ok) throw new Error("Ошибка при обновлении банка")
-  return await res.json()
+
+  return res.json().then(data => data.bank)
 }
 
 export async function deleteBank(id: string): Promise<void> {

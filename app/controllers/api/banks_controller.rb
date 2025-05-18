@@ -44,7 +44,7 @@ class Api::BanksController < ApplicationController
 
   def bank_params
     params.require(:bank).permit(
-      :id, :name, :description
+      :id, :name, :description, :image
     )
   end
 end

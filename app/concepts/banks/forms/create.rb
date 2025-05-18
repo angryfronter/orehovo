@@ -3,6 +3,7 @@ module Banks
     class Create < Base
       property :name
       property :description
+      property :image
 
       validation do
         params do
