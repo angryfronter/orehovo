@@ -28,9 +28,9 @@ export default function CatalogFilters({ onChange }: CatalogFiltersProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onChange("bodyType", bodyType)
+    onChange("body_type", bodyType)
     onChange("gearbox", gearbox)
-    onChange("drive", drive)
+    onChange("drive_type", drive)
     onChange("minPrice", minPrice)
     onChange("maxPrice", maxPrice)
   }

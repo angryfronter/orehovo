@@ -11,7 +11,7 @@ import CatalogFilters from "@/components/catalog-filters"
 import Promotions from "@/components/promotions"
 import AssistanceForm from "@/components/assistance-form"
 import Loading from "@/components/loading"
-import { fetchCars } from "@/src/utils/api"
+import { fetchvisibleCars } from "@/src/utils/api"
 import { slugify } from "@/src/utils/slugify"
 
 interface Car {
@@ -21,6 +21,9 @@ interface Car {
   model: {id: string, name: string}
   images: string[]
   price: number
+  body_type: string
+  gearbox: string
+  drive_type: string
 }
 
 interface GroupedCars {
@@ -35,7 +38,7 @@ export default function CatalogPage() {
   const [filters, setFilters] = useState({
     body_type: "all",
     gearbox: "all",
-    drive: "all",
+    drive_type: "all",
     minPrice: "",
     maxPrice: "",
   })
@@ -44,21 +47,21 @@ export default function CatalogPage() {
     const fetchModels = async () => {
       setLoading(true)
       try {
-        const { cars }: { cars: Car[] } = await fetchCars()
+        const { cars }: { cars: Car[] } = await fetchvisibleCars()
 
         const filtered = cars.filter((car: Car) => {
-          if (selectedMark && car.mark.name  !== selectedMark ) {
+          if (selectedMark && car.mark.id !== selectedMark) {
             return false
           }
-          // if (filters.body_type !== "all" && car.bodyType  !== filters.body_type ) {
-          //   return false
-          // }
-          // if (filters.gearbox !== "all" && car.transmission  !== filters.gearbox ) {
-          //   return false
-          // }
-          // if (filters.drive !== "all" && car.drivetrain  !== filters.drive ) {
-          //   return false
-          // }
+          if (filters.body_type !== "all" && car.body_type  !== filters.body_type ) {
+            return false
+          }
+          if (filters.gearbox !== "all" && car.gearbox  !== filters.gearbox ) {
+            return false
+          }
+          if (filters.drive_type !== "all" && car.drive_type  !== filters.drive_type ) {
+            return false
+          }
           if (filters.minPrice && car.price < Number.parseInt(filters.minPrice)) {
             return false
           }
@@ -93,7 +96,7 @@ export default function CatalogPage() {
     setFilters({
       body_type: "all",
       gearbox: "all",
-      drive: "all",
+      drive_type: "all",
       minPrice: "",
       maxPrice: "",
     })
