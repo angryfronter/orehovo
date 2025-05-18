@@ -54,6 +54,12 @@ export default function AdminLayout({
               События
             </Button>
           </Link>
+          <Link href="/admin/banks">
+            <Button variant="ghost" className="w-full justify-start">
+              <Car className="mr-2 h-4 w-4" />
+              Банки
+            </Button>
+          </Link>
           {/* <Link href="/admin/content">
             <Button variant="ghost" className="w-full justify-start">
               <FileText className="mr-2 h-4 w-4" />

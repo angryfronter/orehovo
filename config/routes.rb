@@ -28,6 +28,8 @@ Rails.application.routes.draw do
 
     resources :events, only: [:index, :show, :create, :destroy, :update]
 
+    resources :banks, only: [:index, :show, :create, :destroy, :update]
+
     resources :contacts, only: [:index, :show, :create, :destroy, :update]
 
     resources :marks, only: [:index, :show, :create, :destroy, :update]

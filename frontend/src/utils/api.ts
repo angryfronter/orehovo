@@ -331,3 +331,41 @@ export async function fetchFilteredCars(filters: {
   if (!response.ok) throw new Error("Failed to fetch cars")
   return response.json()
 }
+
+///////////////////////////////////////////////////////////////////
+
+export async function fetchBanks(): Promise<{ banks: any[] }> {
+  const response = await fetch(`${API_URL}/api/banks`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch banks")
+  }
+  return response.json()
+}
+
+export async function createBank(data: { bank: any }) {
+  const res = await fetch(`${API_URL}/api/banks`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error("Ошибка при создании банка")
+  return await res.json()
+}
+
+export async function updateBank(id: string, data: { bank: any }) {
+  const res = await fetch(`${API_URL}/api/banks/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error("Ошибка при обновлении банка")
+  return await res.json()
+}
+
+export async function deleteBank(id: string): Promise<void> {
+  const response = await fetch(`${API_URL}/api/banks/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!response.ok) throw new Error("Failed to delete bank")
+}
